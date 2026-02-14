@@ -2,6 +2,7 @@ import BottomNav from './bottom-nav';
 import { Bell, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
+import { LanguageSwitcher } from '../language-switcher';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
         <div className="container flex h-14 items-center">
           <Logo withText={true} />
           <div className="flex flex-1 items-center justify-end space-x-2">
+            <LanguageSwitcher />
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>

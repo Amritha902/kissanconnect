@@ -1,0 +1,16 @@
+{
+  "AddProductPage": {
+    "voiceListingButton": "टैप करें और बोलें (उदा., \"50 किलो टमाटर, बीस रुपये किलो\")"
+  },
+  "HomePage": {
+    "subtitle": "हमारे खेतों से आपकी मेज तक। ताजा, स्थानीय उपज की खोज करें और अपने आस-पास के किसानों से सीधे जुड़ें।",
+    "findProduce": "ताजा उपज खोजें",
+    "iAmFarmer": "मैं एक किसान हूँ"
+  },
+  "LocaleSwitcher": {
+    "switchLanguage": "भाषा बदलें",
+    "en": "English",
+    "hi": "हिंदी (Hindi)",
+    "ta": "தமிழ் (Tamil)"
+  }
+}

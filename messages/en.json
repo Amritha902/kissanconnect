@@ -1,0 +1,16 @@
+{
+  "AddProductPage": {
+    "voiceListingButton": "Tap and Speak (e.g., \"50 kilo tamatar, bees rupay kilo\")"
+  },
+  "HomePage": {
+    "subtitle": "From Our Fields to Your Table. Discover fresh, local produce and connect directly with farmers near you.",
+    "findProduce": "Find Fresh Produce",
+    "iAmFarmer": "I'm a Farmer"
+  },
+  "LocaleSwitcher": {
+    "switchLanguage": "Switch language",
+    "en": "English",
+    "hi": "हिंदी (Hindi)",
+    "ta": "தமிழ் (Tamil)"
+  }
+}
