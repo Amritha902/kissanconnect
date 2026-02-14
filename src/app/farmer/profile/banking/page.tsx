@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,16 +9,38 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Trash2 } from 'lucide-react';
+import { useUser, useFirestore, useDoc, updateDocumentNonBlocking, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BankingPage() {
     const { toast } = useToast();
-    const [upiIds, setUpiIds] = useState(['ravi.kumar@upi']);
+    const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
+    
+    const userDocRef = (firestore && user) ? doc(firestore, 'users', user.uid) : null;
+    const memoizedUserDocRef = useMemoFirebase(() => userDocRef, [userDocRef]);
+    const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(memoizedUserDocRef);
+
+    const [upiIds, setUpiIds] = useState<string[]>([]);
     const [newUpiId, setNewUpiId] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    useEffect(() => {
+        if (userProfile && userProfile.bankAccountDetails) {
+            setUpiIds(userProfile.bankAccountDetails);
+        } else if (userProfile) {
+            setUpiIds([]);
+        }
+    }, [userProfile]);
+
     const handleAddUpi = () => {
+        if (!user || !firestore) return;
         if (newUpiId && !upiIds.includes(newUpiId)) {
-            setUpiIds([...upiIds, newUpiId]);
+            const updatedUpiIds = [...upiIds, newUpiId];
+            const userRef = doc(firestore, 'users', user.uid);
+            updateDocumentNonBlocking(userRef, { bankAccountDetails: updatedUpiIds });
+            setUpiIds(updatedUpiIds);
             setNewUpiId('');
             toast({ title: "Success", description: "New UPI ID added." });
             setIsDialogOpen(false);
@@ -28,8 +50,31 @@ export default function BankingPage() {
     };
 
     const handleDeleteUpi = (idToDelete: string) => {
-        setUpiIds(upiIds.filter(id => id !== idToDelete));
+        if (!user || !firestore) return;
+        const updatedUpiIds = upiIds.filter(id => id !== idToDelete);
+        const userRef = doc(firestore, 'users', user.uid);
+        updateDocumentNonBlocking(userRef, { bankAccountDetails: updatedUpiIds });
+        setUpiIds(updatedUpiIds);
         toast({ title: "Success", description: "UPI ID removed." });
+    }
+
+    if(isUserLoading || isProfileLoading) {
+        return (
+             <div>
+                <PageHeader title="Banking & Payments" />
+                <div className="container mx-auto py-4">
+                    <Card>
+                        <CardHeader>
+                           <Skeleton className="h-8 w-48" />
+                           <Skeleton className="h-4 w-64" />
+                        </CardHeader>
+                        <CardContent>
+                           <Skeleton className="h-12 w-full" />
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        )
     }
 
   return (

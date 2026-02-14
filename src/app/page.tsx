@@ -1,12 +1,79 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { doc } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useAuth, useUser, useFirestore, setDocumentNonBlocking, useDoc, useMemoFirebase } from '@/firebase';
+import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
+
+type UserType = 'consumer' | 'farmer';
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
+  const router = useRouter();
+  const auth = useAuth();
+  const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
+  const [userTypeToCreate, setUserTypeToCreate] = useState<UserType | null>(null);
+
+  const userDocRef = (firestore && user) ? doc(firestore, 'users', user.uid) : null;
+  const memoizedUserDocRef = useMemoFirebase(() => userDocRef, [userDocRef]);
+  const { data: userProfile } = useDoc<any>(memoizedUserDocRef);
+
+  useEffect(() => {
+    if (!isUserLoading && user && firestore) {
+      if (userTypeToCreate) {
+        const userRef = doc(firestore, 'users', user.uid);
+        const userData = {
+          id: user.uid,
+          phone: user.phoneNumber,
+          name: user.isAnonymous ? `${userTypeToCreate === 'farmer' ? 'Farmer' : 'Consumer'} #${user.uid.substring(0, 5)}` : (user.displayName || 'New User'),
+          userType: userTypeToCreate,
+          profilePhotoUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+          location: [],
+          address: '',
+          isVerified: false,
+          memberSince: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString(),
+        };
+
+        setDocumentNonBlocking(userRef, userData, { merge: true });
+
+        if (userTypeToCreate === 'farmer') {
+          router.push('/farmer/dashboard');
+        } else {
+          router.push('/discover');
+        }
+        setUserTypeToCreate(null); 
+      } else if(userProfile) {
+         if (userProfile.userType === 'farmer') {
+            router.push('/farmer/dashboard');
+        } else {
+            router.push('/discover');
+        }
+      }
+    }
+  }, [user, isUserLoading, userTypeToCreate, firestore, router, userProfile]);
+
+  const handleLogin = (type: UserType) => {
+    if (!auth) return;
+    setUserTypeToCreate(type);
+    initiateAnonymousSignIn(auth);
+  };
+
+  if (isUserLoading || user) {
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+            <p>Loading...</p>
+        </div>
+    )
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
@@ -30,15 +97,22 @@ export default function Home() {
           From Our Fields to Your Table. Discover fresh, local produce and connect directly with farmers near you.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4">
-          <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-            <Link href="/discover">
-              Find Fresh Produce
-            </Link>
+          <Button
+            size="lg"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold"
+            onClick={() => handleLogin('consumer')}
+            disabled={isUserLoading}
+          >
+            {isUserLoading && userTypeToCreate === 'consumer' ? 'Entering...' : 'Find Fresh Produce'}
           </Button>
-          <Button asChild variant="outline" size="lg" className="bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold">
-            <Link href="/farmer/dashboard">
-              I'm a Farmer
-            </Link>
+          <Button
+            variant="outline"
+            size="lg"
+            className="bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold"
+            onClick={() => handleLogin('farmer')}
+            disabled={isUserLoading}
+          >
+            {isUserLoading && userTypeToCreate === 'farmer' ? 'Entering...' : "I'm a Farmer"}
           </Button>
         </div>
       </div>

@@ -10,30 +10,79 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useUser, useFirestore, useDoc, updateDocumentNonBlocking, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const profileSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  phone: z.string().length(10, "Phone number must be 10 digits").regex(/^\d{10}$/, "Must be a valid 10-digit number"),
+  name: z.string().min(2, "Full name is required"),
+  phone: z.string().optional(),
 });
 
 export default function EditConsumerProfilePage() {
   const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+  
+  const userDocRef = (firestore && user) ? doc(firestore, 'users', user.uid) : null;
+  const memoizedUserDocRef = useMemoFirebase(() => userDocRef, [userDocRef]);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(memoizedUserDocRef);
+
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: 'Priya Sharma',
-      phone: '9876543210',
+      name: '',
+      phone: '',
     },
   });
+  
+  useEffect(() => {
+    if (userProfile) {
+      form.reset({
+        name: userProfile.name || '',
+        phone: userProfile.phone || '',
+      });
+    }
+  }, [userProfile, form]);
 
   function onSubmit(values: z.infer<typeof profileSchema>) {
-    console.log(values);
+    if (!user || !firestore) {
+      toast({ variant: "destructive", title: "Error", description: "You must be logged in to update your profile." });
+      return;
+    };
+    const userRef = doc(firestore, 'users', user.uid);
+    updateDocumentNonBlocking(userRef, {
+        name: values.name,
+        phone: values.phone,
+    });
     toast({
       title: "Profile Updated",
       description: "Your personal details have been saved.",
       action: <CheckCircle className="text-green-500" />,
     });
   }
+  
+    if (isUserLoading || isProfileLoading) {
+        return (
+            <div>
+                <PageHeader title="Edit Profile" />
+                <div className="container mx-auto py-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Your Information</CardTitle>
+                            <CardDescription>Update your name and contact number.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-11 w-full" />
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        )
+    }
 
   return (
     <div>
@@ -49,7 +98,7 @@ export default function EditConsumerProfilePage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
-                  name="fullName"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
