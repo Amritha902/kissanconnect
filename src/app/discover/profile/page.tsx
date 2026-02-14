@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ChevronRight, User, MapPin, Bell, LogOut } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ConsumerProfilePage() {
     const userImage = PlaceHolderImages.find(p => p.id === 'consumer2');
     const menuItems = [
-        { icon: User, label: 'Edit Profile' },
-        { icon: MapPin, label: 'Saved Addresses' },
-        { icon: Bell, label: 'Notification Settings' },
+        { icon: User, label: 'Edit Profile', href: '/discover/profile/edit' },
+        { icon: MapPin, label: 'Saved Addresses', href: '#' },
+        { icon: Bell, label: 'Notification Settings', href: '/discover/profile/notifications' },
     ];
   return (
     <div>
@@ -31,13 +32,15 @@ export default function ConsumerProfilePage() {
         <Card>
             <CardContent className="p-0">
                {menuItems.map(item => (
-                 <div key={item.label} className="flex items-center justify-between p-4 border-b last:border-b-0">
-                    <div className="flex items-center gap-4">
-                        <item.icon className="h-5 w-5 text-muted-foreground" />
-                        <span className="font-medium">{item.label}</span>
+                 <Link href={item.href} key={item.label} className="block transition-colors hover:bg-muted/50">
+                    <div className="flex items-center justify-between p-4 border-b last:border-b-0">
+                        <div className="flex items-center gap-4">
+                            <item.icon className="h-5 w-5 text-muted-foreground" />
+                            <span className="font-medium">{item.label}</span>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                 </div>
+                 </Link>
                ))}
             </CardContent>
         </Card>
