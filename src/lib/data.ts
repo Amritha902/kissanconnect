@@ -11,6 +11,7 @@ export type Product = {
   views: number;
   calls: number;
   status: 'active' | 'inactive' | 'sold_out';
+  freshUntil?: string;
 };
 
 export type Review = {
@@ -63,9 +64,9 @@ export const mockFarmers: Farmer[] = [
       { name: 'Carrots', price: 25, unit: 'kg', image: 'carrots' },
     ],
     products: [
-      { id: 'p1', name: 'Fresh Tomatoes', category: 'Vegetables', price: 20, unit: 'kg', quantity: '50 kg left', isOrganic: false, postedAt: '2 hours ago', image: 'tomatoes', views: 45, calls: 3, status: 'active' },
+      { id: 'p1', name: 'Fresh Tomatoes', category: 'Vegetables', price: 20, unit: 'kg', quantity: '50 kg left', isOrganic: false, postedAt: '2 hours ago', image: 'tomatoes', views: 45, calls: 3, status: 'active', freshUntil: '2024-07-28' },
       { id: 'p2', name: 'Red Onions', category: 'Vegetables', price: 15, unit: 'kg', quantity: '100 kg available', isOrganic: false, postedAt: '5 hours ago', image: 'onions', views: 32, calls: 2, status: 'active' },
-      { id: 'p3', name: 'Sweet Carrots', category: 'Vegetables', price: 25, unit: 'kg', quantity: '30 kg available', isOrganic: true, postedAt: '1 day ago', image: 'carrots', views: 25, calls: 1, status: 'active' },
+      { id: 'p3', name: 'Sweet Carrots', category: 'Vegetables', price: 25, unit: 'kg', quantity: '30 kg available', isOrganic: true, postedAt: '1 day ago', image: 'carrots', views: 25, calls: 1, status: 'active', freshUntil: '2024-08-10' },
     ],
     reviews: [
       { id: 'r1', consumerName: 'Amit Singh', consumerImage: 'consumer1', rating: 5, text: 'Fresh tomatoes, very good quality!', date: '3 days ago', helpful: 12 },
@@ -91,7 +92,7 @@ export const mockFarmers: Farmer[] = [
       { name: 'Farm Eggs', price: 120, unit: 'dozen', image: 'eggs' },
     ],
     products: [
-        { id: 'p4', name: 'Organic Grapes', category: 'Fruits', price: 60, unit: 'kg', quantity: '20 kg available', isOrganic: true, postedAt: '6 hours ago', image: 'grapes', views: 55, calls: 5, status: 'active' },
+        { id: 'p4', name: 'Organic Grapes', category: 'Fruits', price: 60, unit: 'kg', quantity: '20 kg available', isOrganic: true, postedAt: '6 hours ago', image: 'grapes', views: 55, calls: 5, status: 'active', freshUntil: '2024-07-30' },
         { id: 'p5', name: 'Farm Fresh Eggs', category: 'Eggs', price: 120, unit: 'dozen', quantity: '30 dozen left', isOrganic: false, postedAt: '2 days ago', image: 'eggs', views: 60, calls: 8, status: 'sold_out' },
     ],
     reviews: [

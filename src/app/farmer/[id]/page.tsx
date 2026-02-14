@@ -1,17 +1,23 @@
+'use client';
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { mockFarmers } from '@/lib/data';
+import { mockFarmers, type Product } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, MapPin, Phone, Award, Calendar, Leaf, ShoppingBag, MessageSquare } from 'lucide-react';
+import { Star, MapPin, Phone, Award, Calendar, Leaf, ShoppingBag, MessageSquare, ShoppingCart } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
+import { useState } from 'react';
+import { OrderDialog } from '@/components/consumer/order-dialog';
+import { format } from 'date-fns';
 
 export default function FarmerProfilePage({ params }: { params: { id: string } }) {
   const farmer = mockFarmers.find((f) => f.id === params.id);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   if (!farmer) {
     notFound();
@@ -93,15 +99,24 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
               {farmer.products.map((product) => {
                 const productImage = PlaceHolderImages.find(p => p.id === product.image);
                 return (
-                  <Card key={product.id} className="overflow-hidden">
+                  <Card key={product.id} className="overflow-hidden flex flex-col">
                     <div className="relative aspect-square w-full">
                       {productImage && <Image src={productImage.imageUrl} alt={product.name} fill className="object-cover" data-ai-hint={productImage.imageHint} />}
                        {product.isOrganic && <Badge className="absolute top-2 left-2 bg-primary"><Leaf className="mr-1 h-3 w-3"/>Organic</Badge>}
                     </div>
-                    <div className="p-3">
+                    <div className="p-3 flex flex-col flex-grow">
                       <h4 className="font-semibold truncate">{product.name}</h4>
                       <p className="text-muted-foreground text-sm">{product.quantity}</p>
+                      {product.freshUntil && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Fresh until {format(new Date(product.freshUntil), 'PPP')}
+                        </p>
+                      )}
                       <p className="font-bold text-primary mt-1">₹{product.price}/{product.unit}</p>
+                      <div className="flex-grow" />
+                      <Button size="sm" className="w-full mt-2" onClick={() => setSelectedProduct(product)}>
+                        <ShoppingCart className="mr-2 h-4 w-4" /> Order Now
+                      </Button>
                     </div>
                   </Card>
                 );
@@ -139,6 +154,18 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
           </TabsContent>
         </Tabs>
       </div>
+
+      {selectedProduct && (
+        <OrderDialog
+            product={selectedProduct}
+            open={!!selectedProduct}
+            onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    setSelectedProduct(null);
+                }
+            }}
+        />
+      )}
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t">
         <Button size="lg" className="w-full font-bold text-lg bg-accent hover:bg-accent/90">

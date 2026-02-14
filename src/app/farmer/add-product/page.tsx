@@ -10,11 +10,15 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Mic, Upload, CheckCircle } from 'lucide-react';
+import { Camera, Mic, Upload, CheckCircle, Calendar as CalendarIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 const productSchema = z.object({
   productName: z.string().min(3, "Product name must be at least 3 characters"),
@@ -22,6 +26,7 @@ const productSchema = z.object({
   quantity: z.string().min(1, "Quantity is required"),
   unit: z.string().min(1, "Unit is required"),
   price: z.coerce.number().min(0, "Price must be a positive number"),
+  freshUntil: z.date().optional(),
   isOrganic: z.boolean().default(false),
   description: z.string().optional(),
 });
@@ -38,6 +43,7 @@ export default function AddProductPage() {
       price: 0,
       isOrganic: false,
       description: '',
+      freshUntil: undefined,
     },
   });
 
@@ -198,6 +204,48 @@ export default function AddProductPage() {
                             <Input type="number" placeholder="20" className="pl-8" {...field} />
                         </div>
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="freshUntil"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Stays Fresh Until (Optional)</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date < new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
