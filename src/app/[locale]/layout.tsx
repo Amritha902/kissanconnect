@@ -3,21 +3,22 @@ import { Toaster } from '@/components/ui/toaster';
 import '../globals.css';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
-import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
 export const metadata: Metadata = {
   title: 'KisanConnect',
   description: 'A hyperlocal farm-to-consumer discovery platform.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: {locale}
 }: Readonly<{
   children: React.ReactNode;
   params: {locale: string};
 }>) {
-  const messages = useMessages();
+  const messages = await getMessages();
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
