@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -9,7 +8,6 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useAuth, useUser, useFirestore, setDocumentNonBlocking, useDoc, useMemoFirebase } from '@/firebase';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 
@@ -17,7 +15,6 @@ type UserType = 'consumer' | 'farmer';
 
 export default function Home() {
   const t = useTranslations('HomePage');
-  const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
   const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -80,15 +77,13 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
       <div className="absolute inset-0 -z-10">
-        {heroImage && (
-          <Image
-            src={heroImage.imageUrl}
-            alt={heroImage.description}
-            data-ai-hint={heroImage.imageHint}
+        <Image
+            src="https://picsum.photos/seed/hero/1920/1080"
+            alt="A vibrant farm landscape with fresh vegetables in the foreground."
+            data-ai-hint="farm vegetables"
             fill
             className="object-cover"
           />
-        )}
         <div className="absolute inset-0 bg-black/60" />
       </div>
 

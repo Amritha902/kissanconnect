@@ -20,9 +20,11 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   const onSelectChange = (newLocale: string) => {
-    // Manually construct the new path
-    const pathWithoutLocale = pathname.startsWith(`/${locale}`) ? pathname.substring(locale.length + 1) : pathname;
-    const newPath = `/${newLocale}${pathWithoutLocale || '/'}`;
+    // The pathname from `next/navigation` includes the locale.
+    // We can split the path and replace the locale part.
+    const pathParts = pathname.split('/');
+    pathParts[1] = newLocale;
+    const newPath = pathParts.join('/');
     
     startTransition(() => {
       router.replace(newPath);
