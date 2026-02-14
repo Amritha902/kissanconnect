@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { mockFarmerDashboardData, mockProducts } from '@/lib/data';
 import { ProductCard } from '@/components/farmer/product-card';
 import { Eye, Phone, Package, IndianRupee, PlusCircle, PhoneCall } from 'lucide-react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, limit } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
+import { mockFarmerDashboardData } from '@/lib/data';
 
 const stats = [
     { label: 'Views', value: mockFarmerDashboardData.todayStats.views, icon: Eye },
@@ -13,10 +18,20 @@ const stats = [
 ];
 
 export default function FarmerDashboard() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const productsQuery = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'products'), where('farmerId', '==', user.uid), limit(3));
+  }, [firestore, user]);
+
+  const { data: products, isLoading: productsLoading } = useCollection<any>(productsQuery);
+
   return (
     <div className="container mx-auto py-4 space-y-6">
       <div>
-        <h1 className="font-headline text-2xl font-bold">👋 Hi Ravi!</h1>
+        <h1 className="font-headline text-2xl font-bold">👋 Hi {user?.displayName || 'Farmer'}!</h1>
         <p className="text-muted-foreground">Here's your farm's performance today.</p>
       </div>
       
@@ -43,9 +58,15 @@ export default function FarmerDashboard() {
       </Button>
 
       <div>
-        <h2 className="text-lg font-headline font-semibold mb-2">My Listings (3 Active)</h2>
+        <h2 className="text-lg font-headline font-semibold mb-2">My Listings ({products?.length || 0} Active)</h2>
         <div className="space-y-4">
-          {mockProducts.slice(0, 3).map(product => (
+          {productsLoading && (
+            <>
+              <Skeleton className="h-28 w-full" />
+              <Skeleton className="h-28 w-full" />
+            </>
+          )}
+          {products?.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
