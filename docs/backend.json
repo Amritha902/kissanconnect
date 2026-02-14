@@ -1,0 +1,1061 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the KisanDirect platform, either a farmer (seller), a consumer (buyer), or an admin.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "phone": {
+          "type": "string",
+          "description": "User's registered phone number."
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the user."
+        },
+        "userType": {
+          "type": "string",
+          "description": "The role of the user within the application, defining their access and features.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "profilePhotoUrl": {
+          "type": "string",
+          "description": "URL to the user's profile picture.",
+          "format": "uri"
+        },
+        "location": {
+          "type": "array",
+          "description": "Geographical coordinates of the user (latitude, longitude).",
+          "items": {
+            "type": "number"
+          }
+        },
+        "address": {
+          "type": "string",
+          "description": "Physical address of the user."
+        },
+        "isVerified": {
+          "type": "boolean",
+          "description": "Indicates if the user (farmer) has completed Aadhaar verification."
+        },
+        "rating": {
+          "type": "number",
+          "description": "Average rating given to the user (farmer) by consumers, ranging from 1 to 5."
+        },
+        "totalReviews": {
+          "type": "number",
+          "description": "Total number of reviews received by the user (farmer)."
+        },
+        "totalCallsReceived": {
+          "type": "number",
+          "description": "Total number of calls received by the user (farmer) regarding their products."
+        },
+        "totalProductsListed": {
+          "type": "number",
+          "description": "Total number of products listed by the user (farmer)."
+        },
+        "bankAccountDetails": {
+          "type": "array",
+          "description": "Banking information for farmers to receive payments, including account number, IFSC code, and account holder name.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hashedAadhaar": {
+          "type": "string",
+          "description": "Hashed version of the farmer's Aadhaar number, used for verification. (Security best practice: never store raw Aadhaar)."
+        },
+        "certifications": {
+          "type": "array",
+          "description": "List of certifications for farmers, such as organic certificates.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "memberSince": {
+          "type": "string",
+          "description": "Timestamp when the user registered on the platform.",
+          "format": "date-time"
+        },
+        "lastActiveAt": {
+          "type": "string",
+          "description": "Timestamp of the user's last activity.",
+          "format": "date-time"
+        },
+        "fcmToken": {
+          "type": "string",
+          "description": "Firebase Cloud Messaging token for sending push notifications to the user's device."
+        }
+      },
+      "required": [
+        "id",
+        "phone",
+        "name",
+        "userType",
+        "profilePhotoUrl",
+        "location",
+        "address",
+        "isVerified",
+        "memberSince",
+        "lastActiveAt"
+      ]
+    },
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a farm produce listed by a farmer for sale on the platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Product entity."
+        },
+        "farmerId": {
+          "type": "string",
+          "description": "Reference to the User who listed this product. (Relationship: User 1:N Product)"
+        },
+        "farmerName": {
+          "type": "string",
+          "description": "Denormalized name of the farmer for quick display."
+        },
+        "farmerProfilePhotoUrl": {
+          "type": "string",
+          "description": "Denormalized URL to the farmer's profile picture.",
+          "format": "uri"
+        },
+        "farmerRating": {
+          "type": "number",
+          "description": "Denormalized average rating of the farmer."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the produce (e.g., 'Fresh Tomatoes')."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the product (e.g., Vegetables, Fruits, Grains).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "price": {
+          "type": "number",
+          "description": "Price per unit of the product."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Unit of measurement for the product (e.g., 'kg', 'piece', 'liter')."
+        },
+        "availableQuantity": {
+          "type": "number",
+          "description": "Quantity of the product currently available."
+        },
+        "photoUrls": {
+          "type": "array",
+          "description": "URLs to photos of the product.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description or details about the product."
+        },
+        "isOrganic": {
+          "type": "boolean",
+          "description": "Indicates if the product is organic or pesticide-free."
+        },
+        "location": {
+          "type": "array",
+          "description": "Geographical coordinates where the product is available (farmer's location).",
+          "items": {
+            "type": "number"
+          }
+        },
+        "address": {
+          "type": "string",
+          "description": "Address where the product is available."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the product listing (e.g., active, sold_out, inactive).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "viewsCount": {
+          "type": "number",
+          "description": "Total number of times this product listing has been viewed."
+        },
+        "callsCount": {
+          "type": "number",
+          "description": "Total number of calls initiated for this product."
+        },
+        "listedAt": {
+          "type": "string",
+          "description": "Timestamp when the product was first listed.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of the last update to the product listing.",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "description": "Timestamp when the product listing is set to expire.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "farmerId",
+        "name",
+        "category",
+        "price",
+        "unit",
+        "availableQuantity",
+        "photoUrls",
+        "isOrganic",
+        "location",
+        "address",
+        "status",
+        "viewsCount",
+        "callsCount",
+        "listedAt",
+        "updatedAt",
+        "expiresAt"
+      ]
+    },
+    "Call": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Call",
+      "type": "object",
+      "description": "Represents a record of a call initiated by a consumer to a farmer through the app.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Call entity."
+        },
+        "consumerId": {
+          "type": "string",
+          "description": "Reference to the User who initiated the call. (Relationship: User 1:N Call)"
+        },
+        "farmerId": {
+          "type": "string",
+          "description": "Reference to the User who received the call. (Relationship: User 1:N Call)"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to the Product the consumer was interested in. (Relationship: Product 1:N Call)"
+        },
+        "consumerPhoneNumber": {
+          "type": "string",
+          "description": "Phone number of the consumer who made the call."
+        },
+        "farmerPhoneNumber": {
+          "type": "string",
+          "description": "Phone number of the farmer who received the call."
+        },
+        "initiatedAt": {
+          "type": "string",
+          "description": "Timestamp when the call was initiated.",
+          "format": "date-time"
+        },
+        "durationInSeconds": {
+          "type": "number",
+          "description": "Duration of the call in seconds, if tracked."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the call (e.g., initiated, connected, failed).",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "consumerId",
+        "farmerId",
+        "productId",
+        "consumerPhoneNumber",
+        "farmerPhoneNumber",
+        "initiatedAt",
+        "status"
+      ]
+    },
+    "Review": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Review",
+      "type": "object",
+      "description": "Represents a review and rating provided by a consumer for a farmer's products and service.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Review entity."
+        },
+        "farmerId": {
+          "type": "string",
+          "description": "Reference to the User (farmer) being reviewed. (Relationship: User 1:N Review)"
+        },
+        "consumerId": {
+          "type": "string",
+          "description": "Reference to the User (consumer) who submitted the review. (Relationship: User 1:N Review)"
+        },
+        "consumerName": {
+          "type": "string",
+          "description": "Denormalized name of the consumer who posted the review."
+        },
+        "consumerProfilePhotoUrl": {
+          "type": "string",
+          "description": "Denormalized URL to the consumer's profile picture.",
+          "format": "uri"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Star rating given to the farmer (1-5)."
+        },
+        "text": {
+          "type": "string",
+          "description": "Detailed review text."
+        },
+        "photoUrls": {
+          "type": "array",
+          "description": "URLs to photos uploaded by the consumer with the review.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isProductAvailable": {
+          "type": "boolean",
+          "description": "Indicates if the product was available at the time of purchase inquiry."
+        },
+        "qualityRating": {
+          "type": "string",
+          "description": "Rating for the product's quality (e.g., fresh, average, poor).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priceRating": {
+          "type": "string",
+          "description": "Rating for the product's price fairness (e.g., fair, expensive, cheap).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "helpfulCount": {
+          "type": "number",
+          "description": "Number of users who found this review helpful."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the review was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "farmerId",
+        "consumerId",
+        "rating",
+        "text",
+        "isProductAvailable",
+        "qualityRating",
+        "priceRating",
+        "createdAt"
+      ]
+    },
+    "Favorite": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Favorite",
+      "type": "object",
+      "description": "Represents a consumer's saved farmer or product, allowing for quick access and notifications.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Favorite entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who marked the favorite. (Relationship: User 1:N Favorite)"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of entity being favorited (e.g., farmer, product).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "targetId": {
+          "type": "string",
+          "description": "Reference to the favorited entity (Farmer ID or Product ID). (Relationship: User N:N Farmer / User N:N Product)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the favorite was added.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "type",
+        "targetId",
+        "createdAt"
+      ]
+    },
+    "Notification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Notification",
+      "type": "object",
+      "description": "Represents a notification sent to a user, alerting them about events, updates, or promotions.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Notification entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who should receive the notification. (Relationship: User 1:N Notification)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the notification."
+        },
+        "body": {
+          "type": "string",
+          "description": "Main content or message of the notification."
+        },
+        "type": {
+          "type": "string",
+          "description": "Category of the notification (e.g., new_product, price_drop, new_farmer, promotional_offer, tip, market_price_update, new_review, call_received).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "actionUrl": {
+          "type": "string",
+          "description": "Deep link URL to navigate within the app when the notification is tapped.",
+          "format": "uri"
+        },
+        "isRead": {
+          "type": "boolean",
+          "description": "Indicates if the user has read the notification."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the notification was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "body",
+        "type",
+        "actionUrl",
+        "isRead",
+        "createdAt"
+      ]
+    },
+    "Article": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Article",
+      "type": "object",
+      "description": "Represents informational content such as tips, government schemes, weather alerts, or market price updates.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Article entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the article."
+        },
+        "content": {
+          "type": "string",
+          "description": "Full content of the article, which can include rich text or markdown."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of content presented in the article (e.g., tip, scheme, weather_alert, market_price).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographical region relevant to the article (e.g., for weather alerts or localized market prices)."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "Reference to the User (Admin) who published the article. (Relationship: User 1:N Article)"
+        },
+        "publishedAt": {
+          "type": "string",
+          "description": "Timestamp when the article was published.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of the last update to the article.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "content",
+        "type",
+        "authorId",
+        "publishedAt"
+      ]
+    },
+    "CommunityPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CommunityPost",
+      "type": "object",
+      "description": "Represents a post made by a user in the community feed to share experiences or information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Community Post entity."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "Reference to the User who created the post. (Relationship: User 1:N CommunityPost)"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Denormalized name of the post author."
+        },
+        "authorProfilePhotoUrl": {
+          "type": "string",
+          "description": "Denormalized URL to the author's profile picture.",
+          "format": "uri"
+        },
+        "content": {
+          "type": "string",
+          "description": "Text content of the community post."
+        },
+        "photoUrls": {
+          "type": "array",
+          "description": "URLs to photos attached to the post.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "taggedFarmerIds": {
+          "type": "array",
+          "description": "References to Farmer Users tagged in the post. (Relationship: User N:N CommunityPost)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "likesCount": {
+          "type": "number",
+          "description": "Total number of likes received on the post."
+        },
+        "commentsCount": {
+          "type": "number",
+          "description": "Total number of comments on the post."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the post was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of the last update to the post.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "authorId",
+        "content",
+        "createdAt"
+      ]
+    },
+    "Comment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Comment",
+      "type": "object",
+      "description": "Represents a comment made on a CommunityPost.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Comment entity."
+        },
+        "postId": {
+          "type": "string",
+          "description": "Reference to the CommunityPost this comment belongs to. (Relationship: CommunityPost 1:N Comment)"
+        },
+        "authorId": {
+          "type": "string",
+          "description": "Reference to the User who created the comment. (Relationship: User 1:N Comment)"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Denormalized name of the comment author."
+        },
+        "authorProfilePhotoUrl": {
+          "type": "string",
+          "description": "Denormalized URL to the author's profile picture.",
+          "format": "uri"
+        },
+        "content": {
+          "type": "string",
+          "description": "Text content of the comment."
+        },
+        "likesCount": {
+          "type": "number",
+          "description": "Total number of likes received on the comment."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the comment was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of the last update to the comment.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "postId",
+        "authorId",
+        "content",
+        "createdAt"
+      ]
+    },
+    "Conversation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Conversation",
+      "type": "object",
+      "description": "Represents a chat conversation between users, either a group chat or direct message.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Conversation entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the conversation (e.g., group chat name). If it's a direct message, this could be auto-generated from participant names."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description for the conversation."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of conversation (e.g., group, direct_message, topic).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "participantIds": {
+          "type": "array",
+          "description": "References to Users participating in the conversation. (Relationship: User N:N Conversation)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the conversation was created.",
+          "format": "date-time"
+        },
+        "lastMessageAt": {
+          "type": "string",
+          "description": "Timestamp of the last message sent in the conversation.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "participantIds",
+        "createdAt",
+        "lastMessageAt"
+      ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Represents an individual message within a Conversation.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Chat Message entity."
+        },
+        "conversationId": {
+          "type": "string",
+          "description": "Reference to the Conversation this message belongs to. (Relationship: Conversation 1:N ChatMessage)"
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to the User who sent the message. (Relationship: User 1:N ChatMessage)"
+        },
+        "senderName": {
+          "type": "string",
+          "description": "Denormalized name of the message sender."
+        },
+        "senderProfilePhotoUrl": {
+          "type": "string",
+          "description": "Denormalized URL to the sender's profile picture.",
+          "format": "uri"
+        },
+        "content": {
+          "type": "string",
+          "description": "Text content of the chat message."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of content in the message (e.g., text, image, system alert).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the message was sent.",
+          "format": "date-time"
+        },
+        "readBy": {
+          "type": "array",
+          "description": "References to User IDs who have read this message. (Relationship: User N:N ChatMessage)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "conversationId",
+        "senderId",
+        "content",
+        "type",
+        "createdAt"
+      ]
+    },
+    "SupportTicket": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SupportTicket",
+      "type": "object",
+      "description": "Represents a support request or issue reported by a user to the platform administrators.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Support Ticket entity."
+        },
+        "reporterId": {
+          "type": "string",
+          "description": "Reference to the User who created the ticket. (Relationship: User 1:N SupportTicket)"
+        },
+        "reporterName": {
+          "type": "string",
+          "description": "Denormalized name of the user who reported the issue."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Brief subject line of the support ticket."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the issue or request."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the support ticket (e.g., open, in_progress, resolved, closed).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priority": {
+          "type": "string",
+          "description": "Priority level of the ticket (e.g., low, medium, high).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assignedToAdminId": {
+          "type": "string",
+          "description": "Reference to the Admin User ID to whom the ticket is assigned. (Relationship: User 1:N SupportTicket)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the ticket was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of the last update to the ticket.",
+          "format": "date-time"
+        },
+        "resolutionNotes": {
+          "type": "string",
+          "description": "Notes on how the ticket was resolved by an admin."
+        }
+      },
+      "required": [
+        "id",
+        "reporterId",
+        "subject",
+        "description",
+        "status",
+        "priority",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles including farmers, consumers, and admins. Documents contain unique user data. Includes denormalized 'fcmToken' for direct notification targeting.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, matching Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{adminId}",
+        "definition": {
+          "entityName": "AdminRole",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Dedicated collection for identifying admin users. The mere existence of a document with the user's UID here grants admin privileges, adhering to 'Existence over Content' for DBAC. No specific data, just the UID as document ID.",
+          "params": [
+            {
+              "name": "adminId",
+              "description": "The unique identifier of the user who holds an administrator role, matching Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/products/{productId}",
+        "definition": {
+          "entityName": "Product",
+          "schema": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "Stores all farm produce listings. Accessible to all users for browsing. Includes denormalized 'farmerId', 'farmerName', 'farmerProfilePhotoUrl', and 'farmerRating' for authorization independence and efficient display.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product listing."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/calls/{callId}",
+        "definition": {
+          "entityName": "Call",
+          "schema": {
+            "$ref": "#/backend/entities/Call"
+          },
+          "description": "Records calls initiated by consumers to farmers. Accessible only by the involved 'consumerId' and 'farmerId' for authorization independence.",
+          "params": [
+            {
+              "name": "callId",
+              "description": "The unique identifier for the call record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/reviews/{reviewId}",
+        "definition": {
+          "entityName": "Review",
+          "schema": {
+            "$ref": "#/backend/entities/Review"
+          },
+          "description": "Contains reviews and ratings provided by consumers for farmers. Publicly readable. Includes denormalized 'farmerId', 'consumerId', 'consumerName', and 'consumerProfilePhotoUrl' for authorization independence and efficient display.",
+          "params": [
+            {
+              "name": "reviewId",
+              "description": "The unique identifier for the review."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/favorites/{favoriteId}",
+        "definition": {
+          "entityName": "Favorite",
+          "schema": {
+            "$ref": "#/backend/entities/Favorite"
+          },
+          "description": "Stores a consumer's favorite farmers or products. This is a user-specific subcollection, ensuring private access. Includes denormalized 'userId' and 'targetId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user who marked the favorite."
+            },
+            {
+              "name": "favoriteId",
+              "description": "The unique identifier for the favorite entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/notifications/{notificationId}",
+        "definition": {
+          "entityName": "Notification",
+          "schema": {
+            "$ref": "#/backend/entities/Notification"
+          },
+          "description": "Contains notifications specific to a user. This is a user-specific subcollection, ensuring private access. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user receiving the notification."
+            },
+            {
+              "name": "notificationId",
+              "description": "The unique identifier for the notification."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/articles/{articleId}",
+        "definition": {
+          "entityName": "Article",
+          "schema": {
+            "$ref": "#/backend/entities/Article"
+          },
+          "description": "Stores informational content like tips, schemes, and market updates. Publicly readable. Includes denormalized 'authorId' for authorization independence for write access.",
+          "params": [
+            {
+              "name": "articleId",
+              "description": "The unique identifier for the article."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/community_posts/{postId}",
+        "definition": {
+          "entityName": "CommunityPost",
+          "schema": {
+            "$ref": "#/backend/entities/CommunityPost"
+          },
+          "description": "Stores user-generated posts for the community feed. Publicly readable. Includes denormalized 'authorId', 'authorName', and 'authorProfilePhotoUrl' for authorization independence and efficient display.",
+          "params": [
+            {
+              "name": "postId",
+              "description": "The unique identifier for the community post."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/community_posts/{postId}/comments/{commentId}",
+        "definition": {
+          "entityName": "Comment",
+          "schema": {
+            "$ref": "#/backend/entities/Comment"
+          },
+          "description": "Stores comments made on community posts. Publicly readable within the context of a post. Includes denormalized 'postId', 'authorId', 'authorName', and 'authorProfilePhotoUrl' for authorization independence and efficient display.",
+          "params": [
+            {
+              "name": "postId",
+              "description": "The unique identifier of the parent community post."
+            },
+            {
+              "name": "commentId",
+              "description": "The unique identifier for the comment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/conversations/{conversationId}",
+        "definition": {
+          "entityName": "Conversation",
+          "schema": {
+            "$ref": "#/backend/entities/Conversation"
+          },
+          "description": "Manages chat conversations between users. Access is controlled by the 'participantIds' array within the document, ensuring authorization independence.",
+          "params": [
+            {
+              "name": "conversationId",
+              "description": "The unique identifier for the conversation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/conversations/{conversationId}/messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Stores individual chat messages within a conversation. Includes denormalized 'conversationId', 'senderId', 'senderName', 'senderProfilePhotoUrl', and a denormalized 'conversationParticipantIds' array (copied from parent conversation) for authorization independence.",
+          "params": [
+            {
+              "name": "conversationId",
+              "description": "The unique identifier of the parent conversation."
+            },
+            {
+              "name": "messageId",
+              "description": "The unique identifier for the chat message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/support_tickets/{ticketId}",
+        "definition": {
+          "entityName": "SupportTicket",
+          "schema": {
+            "$ref": "#/backend/entities/SupportTicket"
+          },
+          "description": "Stores user-reported support tickets. Accessible by the 'reporterId', 'assignedToAdminId', or platform administrators. Includes denormalized 'reporterId' and 'assignedToAdminId' for authorization independence.",
+          "params": [
+            {
+              "name": "ticketId",
+              "description": "The unique identifier for the support ticket."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The recommended Firestore structure prioritizes secure, scalable, and debuggable access by strictly adhering to Authorization Independence, Structural Segregation, and consistent Access Modeling. Each collection's authorization logic is self-contained within its documents, eliminating the need for `get()` calls in security rules and enabling atomic operations.\n\n**Authorization Independence (Strategy A):** This design explicitly denormalizes authorization context where access to a document depends on attributes from related entities. For instance:\n*   In the `/products/{productId}` collection, `farmerId` is present within each product document, allowing rules to verify `request.auth.uid == resource.data.farmerId` directly without fetching the farmer's `User` document.\n*   For `/calls/{callId}`, both `consumerId` and `farmerId` are included in the document, ensuring that only the call participants can access their respective call records.\n*   Similarly, `/reviews/{reviewId}` contains `consumerId` and `farmerId`, enabling immediate authorization based on the reviewer or the reviewed farmer.\n*   `/conversations/{conversationId}` documents include a `participantIds` array. To extend this independence to chat messages, each `/conversations/{conversationId}/messages/{messageId}` document will also store a denormalized `conversationParticipantIds` array, copied from its parent `Conversation`, ensuring message access rules do not rely on `get()` calls to the parent conversation document.\n*   `/support_tickets/{ticketId}` documents include `reporterId` and `assignedToAdminId` for direct access control.\n\n**QAPs (Queries are not Filters) (Strategy B & C):** This structure facilitates secure `list` operations by employing Structural Segregation and appropriate Access Modeling:\n*   **Public Collections:** Collections like `/products`, `/articles`, `/community_posts`, and `/reviews` are designed for public read access. Consumers can perform broad `list` queries on these collections (e.g., for discovery on the home screen) and then apply client-side filtering or use Firestore's query capabilities (`where`, `orderBy`, geoqueries via Cloud Functions/Algolia) without security rules restricting their initial read based on content. The security rules will only ensure that *writes* (create, update, delete) are authorized based on ownership (e.g., `farmerId` for `Product`, `authorId` for `CommunityPost`) or specific roles.\n*   **User-Scoped Private Data:** Data like `Favorites` and `Notifications` are housed in subcollections under `/users/{userId}/favorites/{favoriteId}` and `/users/{userId}/notifications/{notificationId}` respectively. This path-based ownership inherently restricts `list` operations to the authenticated user (`request.auth.uid == userId` in the path), making the security rules simple and efficient for private data access. For `Calls`, while a top-level collection, `list` queries will be filtered by `consumerId` or `farmerId` for the requesting user, enabling QAPs.\n*   **Collaborative Data:** For `Conversations` and `ChatMessages`, the `participantIds` array is used. `list` operations on `/conversations` can use `where('participantIds', 'array-contains', request.auth.uid)` to retrieve all conversations a user is part of, fulfilling QAPs without complex rule logic.\n*   **DBAC (Database Access Control):** Global roles are handled using dedicated collections like `/roles_admin/{adminId}`. The mere existence of a document in this collection grants admin privileges. This allows security rules to check `exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid))` for admin authorization, providing clear separation and robust control over sensitive actions like content moderation or user management. This avoids relying on a `userType` field within the main `/users` collection for critical permissions, promoting security through 'Existence over Content'.\n\nOverall, this design minimizes complexity in security rules, ensures data integrity, and supports the application's real-time and discovery features efficiently across different user types."
+  }
+}
