@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Mic, Upload, CheckCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { Camera, Mic, Upload, CheckCircle, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,8 +22,9 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { farmerVoiceProductListing, FarmerVoiceProductListingOutput } from '@/ai/flows/farmer-voice-product-listing';
 
 const productSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
@@ -37,10 +39,14 @@ const productSchema = z.object({
 
 export default function AddProductPage() {
   const t = useTranslations('AddProductPage');
+  const locale = useLocale();
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
+
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -55,6 +61,79 @@ export default function AddProductPage() {
       expiresAt: undefined,
     },
   });
+
+  const startVoiceListing = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        variant: "destructive",
+        title: "Browser Not Supported",
+        description: "Your browser doesn't support voice recognition. Please use Chrome or Safari.",
+      });
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = locale;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      toast({ title: "Listening...", description: "Speak your product details clearly." });
+    };
+
+    recognition.onresult = async (event) => {
+      const transcript = event.results[0][0].transcript;
+      toast({ title: "Processing...", description: "Analyzing your speech." });
+      setIsProcessing(true);
+      try {
+        const result = await farmerVoiceProductListing({ transcribedText: transcript });
+        
+        // Use a type guard to ensure result is not null
+        if (result) {
+            form.setValue('name', result.productName);
+            form.setValue('category', result.category);
+            form.setValue('availableQuantity', result.quantity);
+            form.setValue('unit', result.unit);
+            form.setValue('price', result.price);
+            toast({
+                title: "Details Filled!",
+                description: "Product details have been populated from your voice input.",
+                action: <CheckCircle className="text-green-500" />,
+            });
+        } else {
+            throw new Error("Could not parse speech.");
+        }
+
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "AI Error",
+          description: "Could not understand the product details. Please try again or fill the form manually.",
+        });
+        console.error("AI processing error:", error);
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+
+    recognition.onerror = (event) => {
+      if (event.error === 'no-speech' || event.error === 'audio-capture') {
+        toast({ variant: "destructive", title: "Couldn't hear you", description: "Please make sure your microphone is enabled and try again." });
+      } else if (event.error === 'not-allowed') {
+         toast({ variant: "destructive", title: "Permission Denied", description: "Please grant microphone access to use this feature." });
+      } else {
+        toast({ variant: "destructive", title: "An error occurred", description: "Please try again." });
+      }
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
+  };
 
   function onSubmit(values: z.infer<typeof productSchema>) {
     if (!firestore || !user) {
@@ -93,7 +172,7 @@ export default function AddProductPage() {
   const productImage = PlaceHolderImages.find(p => p.id === 'product_upload');
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-muted/30 min-h-screen">
       <PageHeader title="Add New Product" />
       <div className="container mx-auto py-4 space-y-6">
         
@@ -118,7 +197,7 @@ export default function AddProductPage() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
+            <span className="bg-muted/30 px-2 text-muted-foreground">
               OR
             </span>
           </div>
@@ -130,9 +209,20 @@ export default function AddProductPage() {
                 <CardDescription>For low-literacy farmers, speak to list your product.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Button variant="secondary" size="lg" className="w-full h-auto whitespace-normal text-center">
-                    <Mic className="mr-2 h-5 w-5"/>
-                    {t('voiceListingButton')}
+                <Button 
+                    variant={isRecording ? "destructive" : "secondary"}
+                    size="lg" 
+                    className="w-full h-auto whitespace-normal text-center"
+                    onClick={startVoiceListing}
+                    disabled={isRecording || isProcessing}
+                >
+                    {isProcessing ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin"/>
+                    ) : (
+                        <Mic className="mr-2 h-5 w-5"/>
+                    )}
+                    
+                    {isRecording ? "Listening..." : (isProcessing ? "Processing..." : t('voiceListingButton'))}
                 </Button>
             </CardContent>
         </Card>
@@ -166,7 +256,7 @@ export default function AddProductPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
@@ -208,7 +298,7 @@ export default function AddProductPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Unit</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                                 <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Unit" />
@@ -290,7 +380,7 @@ export default function AddProductPage() {
                   control={form.control}
                   name="isOrganic"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border bg-background p-3 shadow-sm">
                       <div className="space-y-0.5">
                         <FormLabel>Organic / Pesticide-free</FormLabel>
                       </div>
@@ -318,7 +408,7 @@ export default function AddProductPage() {
                   )}
                 />
                 
-                <Button type="submit" size="lg" className="w-full font-bold bg-primary hover:bg-primary/90">List Product</Button>
+                <Button type="submit" size="lg" className="w-full font-bold">List Product</Button>
               </form>
             </Form>
           </CardContent>
@@ -326,4 +416,12 @@ export default function AddProductPage() {
       </div>
     </div>
   );
+}
+
+// @ts-ignore
+declare global {
+    interface Window {
+        SpeechRecognition: typeof SpeechRecognition;
+        webkitSpeechRecognition: typeof SpeechRecognition;
+    }
 }
