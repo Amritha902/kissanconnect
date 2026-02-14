@@ -1,13 +1,24 @@
+'use client';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { FarmerCard } from '@/components/consumer/farmer-card';
-import { mockFarmers } from '@/lib/data';
+import { FarmerCard, FarmerCardSkeleton } from '@/components/consumer/farmer-card';
 import { List, Map, Search, SlidersHorizontal } from 'lucide-react';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 
 const filters = ['Organic', 'Within 5km', 'Vegetables', 'Fruits', 'Fresh Today'];
 
 export default function DiscoverPage() {
+  const firestore = useFirestore();
+  
+  const farmersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'users'), where('userType', '==', 'farmer'));
+  }, [firestore]);
+
+  const { data: farmers, isLoading } = useCollection<any>(farmersQuery);
+
   return (
     <div className="container mx-auto py-4">
       <div className="flex flex-col gap-4">
@@ -37,9 +48,19 @@ export default function DiscoverPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          {mockFarmers.map((farmer) => (
+          {isLoading && (
+            <>
+              <FarmerCardSkeleton />
+              <FarmerCardSkeleton />
+              <FarmerCardSkeleton />
+            </>
+          )}
+          {farmers?.map((farmer) => (
             <FarmerCard key={farmer.id} farmer={farmer} />
           ))}
+          {!isLoading && farmers?.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">No farmers found.</p>
+          )}
         </div>
       </div>
     </div>

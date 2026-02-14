@@ -83,6 +83,12 @@
       "description": "Placeholder for product upload.",
       "imageUrl": "https://images.unsplash.com/photo-1690934167884-08c184b6c606?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx2ZWdldGFibGUlMjBiYXNrZXR8ZW58MHx8fHwxNzcxMDQ4MDM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "vegetable basket"
+    },
+    {
+      "id": "generic_product",
+      "description": "A generic product placeholder.",
+      "imageUrl": "https://images.unsplash.com/photo-1748801583998-c693323e6305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9kdWN0JTIwcGxhY2Vob2xkZXJ8ZW58MHx8fHwxNzcwOTkxNDIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "product placeholder"
     }
   ]
 }

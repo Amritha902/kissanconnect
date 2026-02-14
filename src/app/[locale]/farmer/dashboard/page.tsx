@@ -8,14 +8,6 @@ import { Eye, Phone, Package, IndianRupee, PlusCircle, PhoneCall } from 'lucide-
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { mockFarmerDashboardData } from '@/lib/data';
-
-const stats = [
-    { label: 'Views', value: mockFarmerDashboardData.todayStats.views, icon: Eye },
-    { label: 'Calls', value: mockFarmerDashboardData.todayStats.calls, icon: Phone },
-    { label: 'Products', value: mockFarmerDashboardData.todayStats.productsListed, icon: Package },
-    { label: 'Earnings', value: `₹${mockFarmerDashboardData.todayStats.estimatedEarnings}`, icon: IndianRupee },
-];
 
 export default function FarmerDashboard() {
   const { user } = useUser();
@@ -27,6 +19,13 @@ export default function FarmerDashboard() {
   }, [firestore, user]);
 
   const { data: products, isLoading: productsLoading } = useCollection<any>(productsQuery);
+  
+  const stats = [
+    { label: 'Views', value: 'N/A', icon: Eye },
+    { label: 'Calls', value: 'N/A', icon: Phone },
+    { label: 'Products', value: products?.length || 0, icon: Package },
+    { label: 'Earnings', value: 'N/A', icon: IndianRupee },
+];
 
   return (
     <div className="container mx-auto py-4 space-y-6">
@@ -58,7 +57,10 @@ export default function FarmerDashboard() {
       </Button>
 
       <div>
-        <h2 className="text-lg font-headline font-semibold mb-2">My Listings ({products?.length || 0} Active)</h2>
+        <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-headline font-semibold">My Listings ({products?.length || 0} Active)</h2>
+            <Button variant="link" asChild><Link href="/farmer/products">View All</Link></Button>
+        </div>
         <div className="space-y-4">
           {productsLoading && (
             <>
@@ -69,26 +71,16 @@ export default function FarmerDashboard() {
           {products?.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
+           {!productsLoading && products?.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">You haven't listed any products yet.</p>
+          )}
         </div>
       </div>
 
       <div>
         <h2 className="text-lg font-headline font-semibold mb-2">Recent Calls</h2>
         <div className="space-y-2">
-          {mockFarmerDashboardData.recentCalls.map(call => (
-            <Card key={call.id}>
-                <CardContent className="p-3 flex items-center justify-between">
-                    <div>
-                        <p className="font-semibold">{call.consumerName} wants to buy {call.productName}</p>
-                        <p className="text-sm text-muted-foreground">{call.time}</p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                        <PhoneCall className="mr-2 h-4 w-4"/>
-                        Call Back
-                    </Button>
-                </CardContent>
-            </Card>
-          ))}
+            <p className="text-center text-muted-foreground py-8">Call history will be available soon.</p>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,20 +11,20 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Mic, Upload, CheckCircle, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { Camera, Mic, Upload, CheckCircle, Calendar as CalendarIcon, Loader2, ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { farmerVoiceProductListing, FarmerVoiceProductListingOutput } from '@/ai/flows/farmer-voice-product-listing';
+import { farmerVoiceProductListing } from '@/ai/flows/farmer-voice-product-listing';
+import { categorizeProductImage } from '@/ai/flows/farmer-ai-product-categorization';
 
 const productSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
@@ -46,7 +46,10 @@ export default function AddProductPage() {
   const router = useRouter();
 
   const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
+  const [isImageProcessing, setIsImageProcessing] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -61,6 +64,41 @@ export default function AddProductPage() {
       expiresAt: undefined,
     },
   });
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const dataUri = reader.result as string;
+      setImagePreview(dataUri);
+      setIsImageProcessing(true);
+      toast({ title: 'Analyzing Image...', description: 'Please wait while we categorize your product.' });
+      
+      try {
+        const result = await categorizeProductImage({ photoDataUri: dataUri });
+        if (result?.suggestedCategory) {
+          form.setValue('category', result.suggestedCategory);
+          toast({
+            title: 'Category Suggested!',
+            description: `We've suggested '${result.suggestedCategory}' based on your image.`,
+            action: <CheckCircle className="text-green-500" />,
+          });
+        }
+      } catch (error) {
+        console.error("AI Image Categorization Error:", error);
+        toast({
+          variant: "destructive",
+          title: "AI Error",
+          description: "Could not analyze the image. Please select a category manually.",
+        });
+      } finally {
+        setIsImageProcessing(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const startVoiceListing = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -86,11 +124,10 @@ export default function AddProductPage() {
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
       toast({ title: "Processing...", description: "Analyzing your speech." });
-      setIsProcessing(true);
+      setIsVoiceProcessing(true);
       try {
         const result = await farmerVoiceProductListing({ transcribedText: transcript });
         
-        // Use a type guard to ensure result is not null
         if (result) {
             form.setValue('name', result.productName);
             form.setValue('category', result.category);
@@ -114,7 +151,7 @@ export default function AddProductPage() {
         });
         console.error("AI processing error:", error);
       } finally {
-        setIsProcessing(false);
+        setIsVoiceProcessing(false);
       }
     };
 
@@ -146,8 +183,7 @@ export default function AddProductPage() {
     }
 
     const productsCollection = collection(firestore, 'products');
-    const productImage = PlaceHolderImages.find(p => p.id === 'product_upload');
-
+    
     addDocumentNonBlocking(productsCollection, {
         ...values,
         farmerId: user.uid,
@@ -157,7 +193,7 @@ export default function AddProductPage() {
         callsCount: 0,
         listedAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        photoUrls: productImage ? [productImage.imageUrl] : [],
+        photoUrls: imagePreview ? [imagePreview] : [],
     });
 
     toast({
@@ -168,8 +204,6 @@ export default function AddProductPage() {
 
     router.push('/farmer/products');
   }
-  
-  const productImage = PlaceHolderImages.find(p => p.id === 'product_upload');
 
   return (
     <div className="bg-muted/30 min-h-screen">
@@ -179,15 +213,43 @@ export default function AddProductPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Product Image</CardTitle>
-                <CardDescription>Upload a clear photo of your produce.</CardDescription>
+                <CardDescription>Upload a photo for AI-powered category suggestion.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
-                <div className="w-full aspect-[4/3] relative rounded-lg overflow-hidden border-2 border-dashed flex items-center justify-center bg-muted">
-                    {productImage && <Image src={productImage.imageUrl} alt="Product" layout="fill" objectFit="cover" data-ai-hint={productImage.imageHint} />}
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    className="hidden"
+                />
+                <div 
+                    className="w-full aspect-[4/3] relative rounded-lg overflow-hidden border-2 border-dashed flex items-center justify-center bg-muted cursor-pointer hover:bg-muted/80 transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                >
+                    {imagePreview ? (
+                        <Image src={imagePreview} alt="Product Preview" layout="fill" objectFit="cover" />
+                    ) : (
+                        <div className="text-center text-muted-foreground">
+                            <ImagePlus className="mx-auto h-12 w-12" />
+                            <p>Click to upload an image</p>
+                        </div>
+                    )}
+                     {isImageProcessing && (
+                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                            <Loader2 className="h-8 w-8 animate-spin" />
+                        </div>
+                    )}
                 </div>
                 <div className="flex w-full gap-4">
-                    <Button variant="outline" className="flex-1"><Camera className="mr-2 h-4 w-4"/> Take Photo</Button>
-                    <Button variant="outline" className="flex-1"><Upload className="mr-2 h-4 w-4"/> From Gallery</Button>
+                    <Button 
+                        variant="outline" 
+                        className="flex-1" 
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isImageProcessing}
+                    >
+                        <Upload className="mr-2 h-4 w-4"/> Upload
+                    </Button>
                 </div>
             </CardContent>
         </Card>
@@ -214,15 +276,15 @@ export default function AddProductPage() {
                     size="lg" 
                     className="w-full h-auto whitespace-normal text-center"
                     onClick={startVoiceListing}
-                    disabled={isRecording || isProcessing}
+                    disabled={isRecording || isVoiceProcessing}
                 >
-                    {isProcessing ? (
+                    {isVoiceProcessing ? (
                         <Loader2 className="mr-2 h-5 w-5 animate-spin"/>
                     ) : (
                         <Mic className="mr-2 h-5 w-5"/>
                     )}
                     
-                    {isRecording ? "Listening..." : (isProcessing ? "Processing..." : t('voiceListingButton'))}
+                    {isRecording ? "Listening..." : (isVoiceProcessing ? "Processing..." : t('voiceListingButton'))}
                 </Button>
             </CardContent>
         </Card>

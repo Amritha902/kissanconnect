@@ -1,32 +1,77 @@
+'use client';
 
 import { PageHeader } from '@/components/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ChevronRight, User, Store, Shield, LogOut, Banknote } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth, useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { signOut, Auth } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { doc } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FarmerProfilePage() {
-    const userImage = PlaceHolderImages.find(p => p.id === 'farmer1');
+    const auth = useAuth();
+    const router = useRouter();
+    const firestore = useFirestore();
+    const { user, isUserLoading } = useUser();
+    
+    const userDocRef = useMemoFirebase(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, 'users', user.uid);
+    }, [firestore, user]);
+
+    const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(userDocRef);
+
+    const handleLogout = async (auth: Auth) => {
+        try {
+            await signOut(auth);
+            router.push('/');
+        } catch (error) {
+            console.error("Error signing out: ", error);
+        }
+    };
+
     const menuItems = [
         { icon: User, label: 'Edit Personal Details', href: '/farmer/profile/edit' },
         { icon: Store, label: 'Manage Farm Profile', href: '#' },
         { icon: Banknote, label: 'Banking & Payments', href: '/farmer/profile/banking' },
         { icon: Shield, label: 'Account Security', href: '#' },
     ];
+
+    if (isUserLoading || isProfileLoading) {
+        return (
+            <div>
+                <PageHeader title="My Profile" />
+                <div className="container mx-auto py-4 space-y-6">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-20 w-20 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-7 w-48" />
+                            <Skeleton className="h-5 w-32" />
+                        </div>
+                    </div>
+                     <Card><CardContent className="p-0"><Skeleton className="h-56 w-full" /></CardContent></Card>
+                     <Skeleton className="h-11 w-full" />
+                </div>
+            </div>
+        )
+    }
+
   return (
     <div>
       <PageHeader title="My Profile" />
       <div className="container mx-auto py-4 space-y-6">
         <div className="flex items-center gap-4">
              <Avatar className="h-20 w-20">
-                {userImage && <AvatarImage src={userImage.imageUrl} alt="Ravi Kumar" />}
-                <AvatarFallback>RK</AvatarFallback>
+                {userProfile?.profilePhotoUrl && <AvatarImage src={userProfile.profilePhotoUrl} alt={userProfile.name} />}
+                <AvatarFallback>{userProfile?.name?.charAt(0) || 'F'}</AvatarFallback>
             </Avatar>
             <div>
-                <h2 className="font-headline text-2xl font-bold">Ravi Kumar</h2>
-                <p className="text-muted-foreground">+91 9123456789</p>
+                <h2 className="font-headline text-2xl font-bold">{userProfile?.name || 'Farmer'}</h2>
+                <p className="text-muted-foreground">{userProfile?.phone || user?.phoneNumber || 'No phone number'}</p>
             </div>
         </div>
 
@@ -46,7 +91,7 @@ export default function FarmerProfilePage() {
             </CardContent>
         </Card>
         
-        <Button variant="outline" className="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
+        <Button onClick={() => handleLogout(auth)} variant="outline" className="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
             <LogOut className="mr-2 h-5 w-5" />
             Log Out
         </Button>
