@@ -1,3 +1,88 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero",
+      "description": "A vibrant farm landscape with fresh vegetables in the foreground.",
+      "imageUrl": "https://images.unsplash.com/photo-1567547981970-2a44cc30cf66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZmFybSUyMHZlZ2V0YWJsZXN8ZW58MHx8fHwxNzcxMDQ4MDM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farm vegetables"
+    },
+    {
+      "id": "farmer1",
+      "description": "Portrait of a friendly male farmer.",
+      "imageUrl": "https://images.unsplash.com/photo-1719154718540-8ef3d94e7712?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmYXJtZXIlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA5NzkwMDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farmer portrait"
+    },
+    {
+      "id": "farmer2",
+      "description": "Portrait of a smiling female farmer.",
+      "imageUrl": "https://images.unsplash.com/photo-1616672500735-7015803d497f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGZhcm1lcnxlbnwwfHx8fDE3NzEwMzA5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman farmer"
+    },
+    {
+      "id": "farmer3",
+      "description": "Portrait of an experienced older farmer.",
+      "imageUrl": "https://images.unsplash.com/photo-1695566372318-62666bb5ffe8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxvbGQlMjBmYXJtZXJ8ZW58MHx8fHwxNzcxMDQ4MDM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "old farmer"
+    },
+    {
+      "id": "farm_cover_1",
+      "description": "A wide shot of a lush green farm under a blue sky.",
+      "imageUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtJTIwbGFuZHNjYXBlfGVufDB8fHx8MTc3MTA0ODAzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farm landscape"
+    },
+    {
+      "id": "tomatoes",
+      "description": "A basket of fresh, red tomatoes.",
+      "imageUrl": "https://images.unsplash.com/photo-1700064165267-8fa68ef07167?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMHRvbWF0b2VzfGVufDB8fHx8MTc3MTA0ODAzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh tomatoes"
+    },
+    {
+      "id": "onions",
+      "description": "A pile of whole onions.",
+      "imageUrl": "https://images.unsplash.com/photo-1578922426864-d99c48111d19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmcmVzaCUyMG9uaW9uc3xlbnwwfHx8fDE3NzEwNDgwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh onions"
+    },
+    {
+      "id": "carrots",
+      "description": "A bunch of fresh carrots with green tops.",
+      "imageUrl": "https://images.unsplash.com/photo-1717959159782-98c42b1d4f37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmcmVzaCUyMGNhcnJvdHN8ZW58MHx8fHwxNzcwOTg5ODU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh carrots"
+    },
+    {
+      "id": "grapes",
+      "description": "A bunch of purple grapes.",
+      "imageUrl": "https://images.unsplash.com/photo-1714779044371-f5161c65fd68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmcmVzaCUyMGdyYXBlc3xlbnwwfHx8fDE3NzEwNDgwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh grapes"
+    },
+    {
+      "id": "eggs",
+      "description": "A carton of fresh farm eggs.",
+      "imageUrl": "https://images.unsplash.com/photo-1664339307400-9c22e5f44496?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmYXJtJTIwZWdnc3xlbnwwfHx8fDE3NzEwNDgwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farm eggs"
+    },
+    {
+      "id": "honey",
+      "description": "A jar of golden honey.",
+      "imageUrl": "https://images.unsplash.com/photo-1620101680144-eb3195b64514?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxqYXIlMjBob25leXxlbnwwfHx8fDE3NzEwNDgwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "jar honey"
+    },
+    {
+      "id": "consumer1",
+      "description": "Portrait of a young man.",
+      "imageUrl": "https://images.unsplash.com/photo-1636377985931-898218afd306?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA5NjUwNjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "consumer2",
+      "description": "Portrait of a young woman.",
+      "imageUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDk4MzY0MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "product_upload",
+      "description": "Placeholder for product upload.",
+      "imageUrl": "https://images.unsplash.com/photo-1690934167884-08c184b6c606?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx2ZWdldGFibGUlMjBiYXNrZXR8ZW58MHx8fHwxNzcxMDQ4MDM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vegetable basket"
+    }
+  ]
 }
