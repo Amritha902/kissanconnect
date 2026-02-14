@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import BottomNav from './bottom-nav';
 import { Bell, Settings } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -14,9 +15,11 @@ export default function FarmerLayout({ children }: { children: React.ReactNode }
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>
             </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-              <span className="sr-only">Settings</span>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/farmer/profile">
+                <Settings className="h-5 w-5" />
+                <span className="sr-only">Settings</span>
+              </Link>
             </Button>
           </div>
         </div>

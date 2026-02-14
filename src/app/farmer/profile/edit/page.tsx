@@ -14,7 +14,7 @@ import { z } from 'zod';
 const profileSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
-  aadhar: z.string().length(12, "Aadhar must be 12 digits").regex(/^\d{12}$/, "Aadhar must be 12 digits"),
+  aadhar: z.string().length(14, "Aadhar must be a 12-digit number").regex(/^\d{4} \d{4} \d{4}$/, "Must be a valid 12-digit number"),
 });
 
 export default function EditFarmerProfilePage() {
@@ -84,7 +84,19 @@ export default function EditFarmerProfilePage() {
                     <FormItem>
                       <FormLabel>Aadhar Card Number</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="XXXX XXXX XXXX" {...field} />
+                        <Input 
+                          type="text" 
+                          placeholder="XXXX XXXX XXXX" 
+                          {...field}
+                          onChange={(e) => {
+                            const formatted = e.target.value
+                              .replace(/\D/g, '') // Remove non-digits
+                              .slice(0, 12) // Limit to 12 digits
+                              .replace(/(.{4})/g, '$1 ') // Add a space every 4 digits
+                              .trim(); // Remove trailing space
+                            field.onChange(formatted);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
