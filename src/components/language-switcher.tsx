@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next-intl/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -19,9 +19,13 @@ export function LanguageSwitcher() {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  const onSelectChange = (value: string) => {
+  const onSelectChange = (newLocale: string) => {
+    // Manually construct the new path
+    const pathWithoutLocale = pathname.startsWith(`/${locale}`) ? pathname.substring(locale.length + 1) : pathname;
+    const newPath = `/${newLocale}${pathWithoutLocale || '/'}`;
+    
     startTransition(() => {
-      router.replace(pathname, { locale: value });
+      router.replace(newPath);
     });
   };
 
