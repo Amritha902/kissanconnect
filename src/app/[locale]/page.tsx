@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next-intl/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useTranslations } from 'next-intl';
@@ -46,6 +46,10 @@ export default function Home() {
             rating: 0,
             totalReviews: 0,
             totalCallsReceived: 0,
+            totalProductsListed: 0,
+            bankAccountDetails: [],
+            hashedAadhaar: '',
+            certifications: [],
           })
         };
 
@@ -123,5 +127,3 @@ export default function Home() {
     </main>
   );
 }
-
-    
