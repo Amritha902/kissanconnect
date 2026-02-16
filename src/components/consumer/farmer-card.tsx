@@ -1,14 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from 'next-intl/navigation';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Star, MapPin, Leaf, Phone } from 'lucide-react';
-import type { User } from 'firebase/auth'; // Assuming a User type from Firebase
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Skeleton } from '../ui/skeleton';
 
 type FarmerCardProps = {
@@ -16,8 +14,7 @@ type FarmerCardProps = {
 };
 
 export function FarmerCard({ farmer }: FarmerCardProps) {
-  const profileImage = PlaceHolderImages.find(p => p.id === 'farmer1'); // Example, should be dynamic
-
+  
   return (
     <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="flex flex-row items-center gap-4 p-4">
@@ -52,10 +49,10 @@ export function FarmerCard({ farmer }: FarmerCardProps) {
       </CardContent>
       <CardFooter className="flex gap-2 p-4 pt-0">
         <Button asChild className="flex-1 bg-primary hover:bg-primary/90">
-          <Link href={`tel:${farmer.phone}`}>
+          <a href={`tel:${farmer.phone}`}>
             <Phone className="mr-2 h-4 w-4"/>
             Call Farmer
-          </Link>
+          </a>
         </Button>
         <Button asChild variant="secondary" className="flex-1">
           <Link href={`/farmer/${farmer.id}`}>View Profile & Products</Link>

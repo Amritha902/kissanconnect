@@ -21,7 +21,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { farmerVoiceProductListing } from '@/ai/flows/farmer-voice-product-listing';
 import { categorizeProductImage } from '@/ai/flows/farmer-ai-product-categorization';
@@ -228,7 +228,7 @@ export default function AddProductPage() {
                     onClick={() => fileInputRef.current?.click()}
                 >
                     {imagePreview ? (
-                        <Image src={imagePreview} alt="Product Preview" layout="fill" objectFit="cover" />
+                        <Image src={imagePreview} alt="Product Preview" fill objectFit="cover" />
                     ) : (
                         <div className="text-center text-muted-foreground">
                             <ImagePlus className="mx-auto h-12 w-12" />

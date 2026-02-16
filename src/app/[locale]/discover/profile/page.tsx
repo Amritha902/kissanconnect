@@ -5,10 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight, User, MapPin, Bell, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { Link, useRouter } from 'next-intl/navigation';
 import { useAuth, useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { signOut, Auth } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 

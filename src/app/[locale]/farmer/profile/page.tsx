@@ -5,10 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight, User, Store, Shield, LogOut, Banknote } from 'lucide-react';
-import Link from 'next/link';
+import { Link, useRouter } from 'next-intl/navigation';
 import { useAuth, useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { signOut, Auth } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -36,7 +35,7 @@ export default function FarmerProfilePage() {
 
     const menuItems = [
         { icon: User, label: 'Edit Personal Details', href: '/farmer/profile/edit' },
-        { icon: Store, label: 'Manage Farm Profile', href: '#' },
+        { icon: Store, label: 'Manage Farm Profile', href: '/farmer/profile/manage-farm' },
         { icon: Banknote, label: 'Banking & Payments', href: '/farmer/profile/banking' },
         { icon: Shield, label: 'Account Security', href: '#' },
     ];

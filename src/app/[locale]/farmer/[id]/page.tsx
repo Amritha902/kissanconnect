@@ -1,25 +1,31 @@
 'use client';
 
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next-intl/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, MapPin, Phone, Award, Calendar, Leaf, ShoppingBag, MessageSquare, ShoppingCart, Loader2 } from 'lucide-react';
+import { Star, MapPin, Phone, Award, Calendar, Leaf, ShoppingBag, MessageSquare, ShoppingCart, Heart } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { useState } from 'react';
 import { OrderDialog } from '@/components/consumer/order-dialog';
 import { format } from 'date-fns';
-import { useDoc, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc, collection, query, where } from 'firebase/firestore';
+import { useDoc, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { doc, collection, query, where, addDoc, deleteDoc, getDocs, limit, serverTimestamp } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function FarmerProfilePage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const { user } = useUser();
+  const { toast } = useToast();
+  const router = useRouter();
 
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  
   const farmerDocRef = useMemoFirebase(() => {
       if (!firestore) return null;
       return doc(firestore, 'users', params.id);
@@ -30,8 +36,42 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
     return query(collection(firestore, 'products'), where('farmerId', '==', params.id));
   }, [firestore, params.id]);
 
+  const favoritesQuery = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'users', user.uid, 'favorites'), where('targetId', '==', params.id), limit(1));
+  }, [firestore, user, params.id]);
+
   const { data: farmer, isLoading: isFarmerLoading } = useDoc<any>(farmerDocRef);
   const { data: products, isLoading: areProductsLoading } = useCollection<any>(productsQuery);
+  const { data: favorites, isLoading: areFavoritesLoading } = useCollection(favoritesQuery);
+
+  const isFavorited = favorites && favorites.length > 0;
+
+  const toggleFavorite = async () => {
+    if (!user || !firestore) {
+        toast({
+            variant: "destructive",
+            title: "Please log in",
+            description: "You need to be logged in to favorite a farmer.",
+        });
+        return;
+    }
+    const favoritesCol = collection(firestore, 'users', user.uid, 'favorites');
+    if (isFavorited) {
+        const favoriteToDelete = favorites[0].id;
+        await deleteDoc(doc(favoritesCol, favoriteToDelete));
+        toast({ title: "Removed from favorites." });
+    } else {
+        await addDoc(favoritesCol, {
+            userId: user.uid,
+            targetId: params.id,
+            type: 'farmer',
+            createdAt: serverTimestamp(),
+        });
+        toast({ title: "Added to favorites!" });
+    }
+  };
+
 
   if (isFarmerLoading || areProductsLoading) {
     return (
@@ -84,7 +124,7 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
             {farmer.profilePhotoUrl && <AvatarImage src={farmer.profilePhotoUrl} alt={farmer.name} />}
             <AvatarFallback>{farmer.name.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div>
+          <div className="flex-1">
             <h1 className="font-headline text-2xl font-bold">{farmer.name}</h1>
             {farmer.rating > 0 && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -93,6 +133,9 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
                 </div>
             )}
           </div>
+            <Button variant="ghost" size="icon" onClick={toggleFavorite} disabled={areFavoritesLoading}>
+                <Heart className={cn("h-6 w-6", isFavorited ? "text-red-500 fill-red-500" : "text-muted-foreground")} />
+            </Button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-center">
@@ -187,10 +230,10 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t">
         <Button asChild size="lg" className="w-full font-bold text-lg bg-accent hover:bg-accent/90">
-          <Link href={`tel:${farmer.phone}`}>
+          <a href={`tel:${farmer.phone}`}>
             <Phone className="mr-2 h-5 w-5" />
             Call Farmer
-          </Link>
+          </a>
         </Button>
       </div>
     </div>
