@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useTranslations } from 'next-intl';
@@ -40,6 +40,13 @@ export default function Home() {
           isVerified: false,
           memberSince: new Date().toISOString(),
           lastActiveAt: new Date().toISOString(),
+           ...(userTypeToCreate === 'farmer' && {
+            farmName: user.isAnonymous ? `Farm of ${user.uid.substring(0, 5)}` : `${user.displayName || 'Anonymous'}'s Farm`,
+            coverImage: 'https://picsum.photos/seed/farm_cover/1200/400',
+            rating: 0,
+            totalReviews: 0,
+            totalCallsReceived: 0,
+          })
         };
 
         setDocumentNonBlocking(userRef, userData, { merge: true });
@@ -116,3 +123,5 @@ export default function Home() {
     </main>
   );
 }
+
+    
