@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
@@ -15,13 +16,16 @@ type UserType = 'consumer' | 'farmer';
 export default function Home() {
   const t = useTranslations('HomePage');
   const locale = useLocale();
+  const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const [userTypeToCreate, setUserTypeToCreate] = useState<UserType | null>(null);
 
-  const userDocRef = (firestore && user) ? doc(firestore, 'users', user.uid) : null;
-  const memoizedUserDocRef = useMemoFirebase(() => userDocRef, [userDocRef]);
+  const memoizedUserDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
   const { data: userProfile } = useDoc<any>(memoizedUserDocRef);
 
   useEffect(() => {
@@ -60,20 +64,20 @@ export default function Home() {
         setDocumentNonBlocking(userRef, userData, { merge: true });
 
         if (userTypeToCreate === 'farmer') {
-          window.location.href = `/${locale}/farmer/dashboard`;
+          router.push(`/${locale}/farmer/dashboard`);
         } else {
-          window.location.href = `/${locale}/discover`;
+          router.push(`/${locale}/discover`);
         }
         setUserTypeToCreate(null); 
       } else if(userProfile) {
          if (userProfile.userType === 'farmer') {
-            window.location.href = `/${locale}/farmer/dashboard`;
+            router.push(`/${locale}/farmer/dashboard`);
         } else {
-            window.location.href = `/${locale}/discover`;
+            router.push(`/${locale}/discover`);
         }
       }
     }
-  }, [user, isUserLoading, userTypeToCreate, firestore, userProfile, locale]);
+  }, [user, isUserLoading, userTypeToCreate, firestore, locale, router, userProfile]);
 
   const handleLogin = (type: UserType) => {
     if (!auth) return;

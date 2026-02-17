@@ -25,8 +25,11 @@ export default function EditConsumerProfilePage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   
-  const userDocRef = (firestore && user) ? doc(firestore, 'users', user.uid) : null;
-  const memoizedUserDocRef = useMemoFirebase(() => userDocRef, [userDocRef]);
+  const memoizedUserDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(memoizedUserDocRef);
 
   const form = useForm<z.infer<typeof profileSchema>>({
