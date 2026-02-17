@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useTranslations, useLocale } from 'next-intl';
@@ -15,7 +14,6 @@ type UserType = 'consumer' | 'farmer';
 
 export default function Home() {
   const t = useTranslations('HomePage');
-  const router = useRouter();
   const locale = useLocale();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -27,6 +25,11 @@ export default function Home() {
   const { data: userProfile } = useDoc<any>(memoizedUserDocRef);
 
   useEffect(() => {
+    // This effect should only run on the client after hydration
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     if (!isUserLoading && user && firestore) {
       if (userTypeToCreate) {
         const userRef = doc(firestore, 'users', user.uid);
@@ -57,20 +60,20 @@ export default function Home() {
         setDocumentNonBlocking(userRef, userData, { merge: true });
 
         if (userTypeToCreate === 'farmer') {
-          router.push(`/${locale}/farmer/dashboard`);
+          window.location.href = `/${locale}/farmer/dashboard`;
         } else {
-          router.push(`/${locale}/discover`);
+          window.location.href = `/${locale}/discover`;
         }
         setUserTypeToCreate(null); 
       } else if(userProfile) {
          if (userProfile.userType === 'farmer') {
-            router.push(`/${locale}/farmer/dashboard`);
+            window.location.href = `/${locale}/farmer/dashboard`;
         } else {
-            router.push(`/${locale}/discover`);
+            window.location.href = `/${locale}/discover`;
         }
       }
     }
-  }, [user, isUserLoading, userTypeToCreate, firestore, router, userProfile, locale]);
+  }, [user, isUserLoading, userTypeToCreate, firestore, userProfile, locale]);
 
   const handleLogin = (type: UserType) => {
     if (!auth) return;
