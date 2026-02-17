@@ -3,6 +3,7 @@ import { Bell, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
 import { LanguageSwitcher } from '../language-switcher';
+import { Link } from 'next-intl/navigation';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,9 +17,11 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>
             </Button>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/discover/profile">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Profile</span>
+              </Link>
             </Button>
           </div>
         </div>

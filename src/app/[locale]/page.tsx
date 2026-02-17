@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
@@ -16,7 +16,6 @@ type UserType = 'consumer' | 'farmer';
 export default function Home() {
   const t = useTranslations('HomePage');
   const router = useRouter();
-  const locale = useLocale();
   const auth = useAuth();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
@@ -57,20 +56,20 @@ export default function Home() {
         setDocumentNonBlocking(userRef, userData, { merge: true });
 
         if (userTypeToCreate === 'farmer') {
-          router.push(`/${locale}/farmer/dashboard`);
+          router.push('/farmer/dashboard');
         } else {
-          router.push(`/${locale}/discover`);
+          router.push('/discover');
         }
         setUserTypeToCreate(null); 
       } else if(userProfile) {
          if (userProfile.userType === 'farmer') {
-            router.push(`/${locale}/farmer/dashboard`);
+            router.push('/farmer/dashboard');
         } else {
-            router.push(`/${locale}/discover`);
+            router.push('/discover');
         }
       }
     }
-  }, [user, isUserLoading, userTypeToCreate, firestore, router, userProfile, locale]);
+  }, [user, isUserLoading, userTypeToCreate, firestore, router, userProfile]);
 
   const handleLogin = (type: UserType) => {
     if (!auth) return;
