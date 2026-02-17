@@ -1,3 +1,5 @@
+'use client';
+
 import BottomNav from './bottom-nav';
 import { Bell, User } from 'lucide-react';
 import { Button } from '../ui/button';
