@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from 'next-intl/navigation';
+import Link from 'next/link';
 import BottomNav from './bottom-nav';
 import { Bell, Settings } from 'lucide-react';
 import { Button } from '../ui/button';

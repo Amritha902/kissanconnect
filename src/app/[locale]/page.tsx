@@ -36,7 +36,7 @@ export default function Home() {
     }
 
     if (!isUserLoading && user && firestore) {
-      const navigate = (path: string) => router.push(`/${locale}${path}`);
+      const navigate = (path: string) => router.push(path);
 
       if (userTypeToCreate) {
         const userRef = doc(firestore, 'users', user.uid);
@@ -105,6 +105,7 @@ export default function Home() {
             data-ai-hint="farm vegetables"
             fill
             className="object-cover"
+            priority
           />
         <div className="absolute inset-0 bg-black/60" />
       </div>

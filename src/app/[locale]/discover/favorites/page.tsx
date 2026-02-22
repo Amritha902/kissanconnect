@@ -7,7 +7,7 @@ import { Heart } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Link } from 'next-intl/navigation';
+import Link from 'next/link';
 
 export default function FavoritesPage() {
   const { user } = useUser();

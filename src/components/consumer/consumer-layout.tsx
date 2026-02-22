@@ -5,8 +5,7 @@ import { Bell, User, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
 import { LanguageSwitcher } from '../language-switcher';
-import { Link } from 'next-intl/navigation';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -28,10 +27,7 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
               <Bell className="h-5 w-5" />
               {/* Notification badge — swap the hardcoded `3` for a real count */}
               <span
-                className={cn(
-                  'absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center',
-                  'rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground',
-                )}
+                className='absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground'
               >
                 3
               </span>
