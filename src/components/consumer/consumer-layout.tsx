@@ -5,7 +5,7 @@ import { Bell, User, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
 import { LanguageSwitcher } from '../language-switcher';
-import Link from 'next/link';
+import { Link } from 'next-intl/navigation';
 import { cn } from '@/lib/utils';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
@@ -18,8 +18,10 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
           <div className="flex flex-1 items-center justify-end space-x-1">
             <LanguageSwitcher />
 
-            <Button variant="ghost" size="icon" className="relative" aria-label="Search">
-              <Search className="h-5 w-5" />
+            <Button asChild variant="ghost" size="icon" className="relative" aria-label="Search">
+              <Link href="/discover/search">
+                <Search className="h-5 w-5" />
+              </Link>
             </Button>
 
             <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">

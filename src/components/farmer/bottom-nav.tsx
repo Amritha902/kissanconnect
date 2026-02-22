@@ -1,7 +1,6 @@
 'use client';
 
-import { Link } from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from 'next-intl/navigation';
 import { LayoutDashboard, Package, Phone, MessageSquare, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +19,7 @@ export default function BottomNav() {
     <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t z-50">
       <nav className="grid h-full grid-cols-5 items-center">
         {navItems.map((item) => {
-          const isActive = pathname.endsWith(item.href);
+          const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.label}
