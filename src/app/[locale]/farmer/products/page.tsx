@@ -13,11 +13,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function FarmerProductsPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const uid = user?.uid;
 
   const productsQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'products'), where('farmerId', '==', user.uid));
-  }, [firestore, user]);
+    if (!firestore || !uid) return null;
+    return query(collection(firestore, 'products'), where('farmerId', '==', uid));
+  }, [firestore, uid]);
 
   const { data: products, isLoading: productsLoading } = useCollection<any>(productsQuery);
 

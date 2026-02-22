@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
@@ -21,11 +21,12 @@ export default function Home() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const [userTypeToCreate, setUserTypeToCreate] = useState<UserType | null>(null);
+  const uid = user?.uid;
 
   const memoizedUserDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
+    if (!firestore || !uid) return null;
+    return doc(firestore, 'users', uid);
+  }, [firestore, uid]);
   const { data: userProfile } = useDoc<any>(memoizedUserDocRef);
 
   useEffect(() => {
@@ -64,16 +65,16 @@ export default function Home() {
         setDocumentNonBlocking(userRef, userData, { merge: true });
 
         if (userTypeToCreate === 'farmer') {
-          router.push(`/${locale}/farmer/dashboard`);
+          router.push('/farmer/dashboard');
         } else {
-          router.push(`/${locale}/discover`);
+          router.push('/discover');
         }
         setUserTypeToCreate(null); 
       } else if(userProfile) {
          if (userProfile.userType === 'farmer') {
-            router.push(`/${locale}/farmer/dashboard`);
+            router.push('/farmer/dashboard');
         } else {
-            router.push(`/${locale}/discover`);
+            router.push('/discover');
         }
       }
     }

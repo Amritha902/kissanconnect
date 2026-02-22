@@ -16,11 +16,12 @@ export default function FarmerProfilePage() {
     const router = useRouter();
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser();
+    const uid = user?.uid;
     
     const userDocRef = useMemoFirebase(() => {
-        if (!firestore || !user) return null;
-        return doc(firestore, 'users', user.uid);
-    }, [firestore, user]);
+        if (!firestore || !uid) return null;
+        return doc(firestore, 'users', uid);
+    }, [firestore, uid]);
 
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(userDocRef);
 

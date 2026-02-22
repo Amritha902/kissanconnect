@@ -24,11 +24,12 @@ export default function EditConsumerProfilePage() {
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const uid = user?.uid;
   
   const memoizedUserDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
+    if (!firestore || !uid) return null;
+    return doc(firestore, 'users', uid);
+  }, [firestore, uid]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(memoizedUserDocRef);
 
@@ -50,11 +51,11 @@ export default function EditConsumerProfilePage() {
   }, [userProfile, form]);
 
   function onSubmit(values: z.infer<typeof profileSchema>) {
-    if (!user || !firestore) {
+    if (!uid || !firestore) {
       toast({ variant: "destructive", title: "Error", description: "You must be logged in to update your profile." });
       return;
     };
-    const userRef = doc(firestore, 'users', user.uid);
+    const userRef = doc(firestore, 'users', uid);
     updateDocumentNonBlocking(userRef, {
         name: values.name,
         phone: values.phone,

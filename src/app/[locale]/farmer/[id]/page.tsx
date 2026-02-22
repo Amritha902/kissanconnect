@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 export default function FarmerProfilePage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
   const { user } = useUser();
+  const uid = user?.uid;
   const { toast } = useToast();
   const router = useRouter();
 
@@ -37,9 +38,9 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
   }, [firestore, params.id]);
 
   const favoritesQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'users', user.uid, 'favorites'), where('targetId', '==', params.id), limit(1));
-  }, [firestore, user, params.id]);
+    if (!firestore || !uid) return null;
+    return query(collection(firestore, 'users', uid, 'favorites'), where('targetId', '==', params.id), limit(1));
+  }, [firestore, uid, params.id]);
 
   const { data: farmer, isLoading: isFarmerLoading } = useDoc<any>(farmerDocRef);
   const { data: products, isLoading: areProductsLoading } = useCollection<any>(productsQuery);
@@ -48,7 +49,7 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
   const isFavorited = favorites && favorites.length > 0;
 
   const toggleFavorite = async () => {
-    if (!user || !firestore) {
+    if (!uid || !firestore) {
         toast({
             variant: "destructive",
             title: "Please log in",
@@ -56,14 +57,14 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
         });
         return;
     }
-    const favoritesCol = collection(firestore, 'users', user.uid, 'favorites');
+    const favoritesCol = collection(firestore, 'users', uid, 'favorites');
     if (isFavorited) {
         const favoriteToDelete = favorites[0].id;
         await deleteDoc(doc(favoritesCol, favoriteToDelete));
         toast({ title: "Removed from favorites." });
     } else {
         await addDoc(favoritesCol, {
-            userId: user.uid,
+            userId: uid,
             targetId: params.id,
             type: 'farmer',
             createdAt: serverTimestamp(),

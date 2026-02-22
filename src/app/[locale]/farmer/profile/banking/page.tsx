@@ -17,11 +17,12 @@ export default function BankingPage() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const uid = user?.uid;
     
     const memoizedUserDocRef = useMemoFirebase(() => {
-      if (!firestore || !user) return null;
-      return doc(firestore, 'users', user.uid);
-    }, [firestore, user]);
+      if (!firestore || !uid) return null;
+      return doc(firestore, 'users', uid);
+    }, [firestore, uid]);
 
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<any>(memoizedUserDocRef);
 
@@ -38,10 +39,10 @@ export default function BankingPage() {
     }, [userProfile]);
 
     const handleAddUpi = () => {
-        if (!user || !firestore) return;
+        if (!uid || !firestore) return;
         if (newUpiId && !upiIds.includes(newUpiId)) {
             const updatedUpiIds = [...upiIds, newUpiId];
-            const userRef = doc(firestore, 'users', user.uid);
+            const userRef = doc(firestore, 'users', uid);
             updateDocumentNonBlocking(userRef, { bankAccountDetails: updatedUpiIds });
             setUpiIds(updatedUpiIds);
             setNewUpiId('');
@@ -53,9 +54,9 @@ export default function BankingPage() {
     };
 
     const handleDeleteUpi = (idToDelete: string) => {
-        if (!user || !firestore) return;
+        if (!uid || !firestore) return;
         const updatedUpiIds = upiIds.filter(id => id !== idToDelete);
-        const userRef = doc(firestore, 'users', user.uid);
+        const userRef = doc(firestore, 'users', uid);
         updateDocumentNonBlocking(userRef, { bankAccountDetails: updatedUpiIds });
         setUpiIds(updatedUpiIds);
         toast({ title: "Success", description: "UPI ID removed." });

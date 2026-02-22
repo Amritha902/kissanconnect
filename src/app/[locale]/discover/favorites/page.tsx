@@ -17,7 +17,7 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!user || !firestore) return;
+      if (!user?.uid || !firestore) return;
       setIsLoading(true);
       const favoritesCol = collection(firestore, 'users', user.uid, 'favorites');
       const favoriteSnapshot = await getDocs(favoritesCol);
@@ -35,7 +35,7 @@ export default function FavoritesPage() {
     };
 
     fetchFavorites();
-  }, [user, firestore]);
+  }, [user?.uid, firestore]);
 
   return (
     <div>

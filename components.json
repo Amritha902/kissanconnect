@@ -15,7 +15,14 @@
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
-    "hooks": "@/hooks"
+    "hooks": "@/hooks",
+    "types": "@/types",
+    "config": "@/config",
+    "stores": "@/stores",
+    "services": "@/services",
+    "actions": "@/actions",
+    "validators": "@/lib/validators",
+    "constants": "@/lib/constants"
   },
   "iconLibrary": "lucide"
 }
