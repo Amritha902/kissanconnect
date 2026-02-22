@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -13,9 +14,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import type { Product } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, Minus, Plus, ShoppingCart } from 'lucide-react';
+
+// Define the Product type locally to fix the import error.
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+};
 
 interface OrderDialogProps {
   product: Product;

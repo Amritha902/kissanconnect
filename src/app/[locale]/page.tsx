@@ -3,20 +3,21 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
-import { useTranslations, useLocale } from 'next-intl';
-import { useRouter } from 'next-intl/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth, useUser, useFirestore, setDocumentNonBlocking, useDoc, useMemoFirebase } from '@/firebase';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
+import { useLocale } from 'next-intl';
 
 type UserType = 'consumer' | 'farmer';
 
 export default function Home() {
   const t = useTranslations('HomePage');
-  const locale = useLocale();
   const router = useRouter();
+  const locale = useLocale();
   const auth = useAuth();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
@@ -30,12 +31,13 @@ export default function Home() {
   const { data: userProfile } = useDoc<any>(memoizedUserDocRef);
 
   useEffect(() => {
-    // This effect should only run on the client after hydration
     if (typeof window === 'undefined') {
       return;
     }
 
     if (!isUserLoading && user && firestore) {
+      const navigate = (path: string) => router.push(`/${locale}${path}`);
+
       if (userTypeToCreate) {
         const userRef = doc(firestore, 'users', user.uid);
         const userData = {
@@ -65,20 +67,20 @@ export default function Home() {
         setDocumentNonBlocking(userRef, userData, { merge: true });
 
         if (userTypeToCreate === 'farmer') {
-          router.push('/farmer/dashboard');
+          navigate('/farmer/dashboard');
         } else {
-          router.push('/discover');
+          navigate('/discover');
         }
         setUserTypeToCreate(null); 
       } else if(userProfile) {
          if (userProfile.userType === 'farmer') {
-            router.push('/farmer/dashboard');
+            navigate('/farmer/dashboard');
         } else {
-            router.push('/discover');
+            navigate('/discover');
         }
       }
     }
-  }, [user, isUserLoading, userTypeToCreate, firestore, locale, router, userProfile]);
+  }, [user, isUserLoading, userTypeToCreate, firestore, router, userProfile, locale]);
 
   const handleLogin = (type: UserType) => {
     if (!auth) return;

@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Select,
@@ -9,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Globe } from 'lucide-react';
-import { useTransition } from 'react';
+import {Globe} from 'lucide-react';
+import {useTransition} from 'react';
 
 export function LanguageSwitcher() {
   const t = useTranslations('LocaleSwitcher');
@@ -20,11 +21,10 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   const onSelectChange = (newLocale: string) => {
-    // The pathname from `next/navigation` includes the locale, e.g., /en/discover
-    // We want to replace the locale part of the path with the new one.
-    const newPath = `/${newLocale}${pathname.substring(locale.length + 1)}`;
+    // This extracts the path without the locale prefix
+    const newPath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : pathname;
     startTransition(() => {
-      router.replace(newPath);
+      router.replace(`${newPath}`, {locale: newLocale});
     });
   };
 

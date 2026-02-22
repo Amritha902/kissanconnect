@@ -5,7 +5,7 @@ import { Bell, User, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
 import { LanguageSwitcher } from '../language-switcher';
-import { Link } from 'next-intl/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
@@ -35,20 +35,12 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
               </span>
             </Button>
 
-            {/* ✅ Fix: don't use asChild with next-intl Link — style the Link directly */}
-            <Link
-              href="/discover/profile"
-              className={cn(
-                'inline-flex h-9 w-9 items-center justify-center rounded-md',
-                'text-sm font-medium ring-offset-background transition-colors',
-                'hover:bg-accent hover:text-accent-foreground',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-              )}
-              aria-label="Profile"
-            >
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
-            </Link>
+            <Button asChild variant="ghost" size="icon">
+              <Link href="/discover/profile" aria-label="Profile">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Profile</span>
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
