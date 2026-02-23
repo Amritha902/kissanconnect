@@ -5,7 +5,7 @@ import { Bell, User, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
 import { LanguageSwitcher } from '../language-switcher';
-import Link from 'next/link';
+import { Link } from 'next-intl/navigation';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
   return (

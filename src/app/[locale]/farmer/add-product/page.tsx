@@ -21,7 +21,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { farmerVoiceProductListing } from '@/ai/flows/farmer-voice-product-listing';
 import { categorizeProductImage } from '@/ai/flows/farmer-ai-product-categorization';
