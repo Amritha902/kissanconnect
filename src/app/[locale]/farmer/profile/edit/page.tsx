@@ -141,7 +141,7 @@ export default function EditFarmerProfilePage() {
                   name="aadhar"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Aadhar Card Number</FormLabel>
+                      <FormLabel>Aadhar Card Number (Optional)</FormLabel>
                       <FormControl>
                         <Input 
                           type="text" 

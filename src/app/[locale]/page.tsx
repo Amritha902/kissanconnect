@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
-import Link from 'next/link';
+import { Link } from 'next-intl/navigation';
 
 export default function Home() {
   const t = useTranslations('HomePage');
@@ -50,7 +50,7 @@ export default function Home() {
             asChild
             variant="outline"
             size="lg"
-            className="bg-transparent border-secondary text-secondary-foreground hover:bg-secondary hover:text-secondary-background font-bold"
+            className="bg-transparent border-gray-300 text-gray-300 hover:bg-gray-300 hover:text-black font-bold"
           >
             <Link href="/login?role=rider">I'm a Rider</Link>
           </Button>
