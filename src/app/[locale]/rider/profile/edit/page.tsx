@@ -18,7 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const profileSchema = z.object({
   name: z.string().min(2, "Full name is required"),
   phone: z.string().min(10, "A valid 10-digit phone number is required").max(10, "A valid 10-digit phone number is required"),
-  aadhar: z.string().optional(),
+  vehicleDetails: z.string().optional(),
 });
 
 export default function EditRiderProfilePage() {
@@ -39,7 +39,7 @@ export default function EditRiderProfilePage() {
     defaultValues: {
       name: '',
       phone: '',
-      aadhar: '',
+      vehicleDetails: '',
     },
   });
   
@@ -48,7 +48,7 @@ export default function EditRiderProfilePage() {
       form.reset({
         name: userProfile.name || '',
         phone: userProfile.phone || '',
-        aadhar: userProfile.hashedAadhaar || '',
+        vehicleDetails: userProfile.vehicleDetails || '',
       });
     }
   }, [userProfile, form]);
@@ -62,7 +62,7 @@ export default function EditRiderProfilePage() {
     updateDocumentNonBlocking(userRef, {
         name: values.name,
         phone: values.phone,
-        hashedAadhaar: values.aadhar,
+        vehicleDetails: values.vehicleDetails,
     });
     toast({
       title: "Profile Updated",
@@ -100,7 +100,7 @@ export default function EditRiderProfilePage() {
         <Card>
           <CardHeader>
             <CardTitle>Your Information</CardTitle>
-            <CardDescription>Update your name and contact number.</CardDescription>
+            <CardDescription>Update your name, contact, and vehicle details.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -112,7 +112,7 @@ export default function EditRiderProfilePage() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Priya Sharma" {...field} />
+                        <Input placeholder="e.g., Sanjay Singh" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -133,23 +133,15 @@ export default function EditRiderProfilePage() {
                 />
                 <FormField
                   control={form.control}
-                  name="aadhar"
+                  name="vehicleDetails"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Aadhar Card Number (Optional)</FormLabel>
+                      <FormLabel>Vehicle Details (Optional)</FormLabel>
                       <FormControl>
                         <Input 
                           type="text" 
-                          placeholder="XXXX XXXX XXXX" 
+                          placeholder="e.g., Bajaj Platina - MH 12 AB 1234" 
                           {...field}
-                          onChange={(e) => {
-                            const formatted = e.target.value
-                              .replace(/\D/g, '') // Remove non-digits
-                              .slice(0, 12) // Limit to 12 digits
-                              .replace(/(.{4})/g, '$1 ') // Add a space every 4 digits
-                              .trim(); // Remove trailing space
-                            field.onChange(formatted);
-                          }}
                         />
                       </FormControl>
                       <FormMessage />

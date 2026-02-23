@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter, notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -220,6 +220,7 @@ export default function FarmerProfilePage({ params }: { params: { id: string } }
       {selectedProduct && (
         <OrderDialog
             product={selectedProduct}
+            farmer={farmer}
             open={!!selectedProduct}
             onOpenChange={(isOpen) => {
                 if (!isOpen) {

@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, Minus, Plus, ShoppingCart } from 'lucide-react';
+import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
+import { collection, serverTimestamp } from 'firebase/firestore';
 
 // Define the Product type locally to fix the import error.
 type Product = {
@@ -23,18 +25,28 @@ type Product = {
   name: string;
   price: number;
   unit: string;
+  photoUrls: string[];
 };
+
+type Farmer = {
+    id: string;
+    address: string;
+}
 
 interface OrderDialogProps {
   product: Product;
+  farmer: Farmer;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 const DELIVERY_FEE = 33;
 
-export function OrderDialog({ product, open, onOpenChange }: OrderDialogProps) {
+export function OrderDialog({ product, farmer, open, onOpenChange }: OrderDialogProps) {
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user } = useUser();
+  
   const [quantity, setQuantity] = useState(1);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -51,19 +63,40 @@ export function OrderDialog({ product, open, onOpenChange }: OrderDialogProps) {
       });
       return;
     }
-    // In a real app, this would send data to a backend.
-    console.log({
-      productId: product.id,
-      productName: product.name,
-      quantity,
-      customerName: name,
-      customerPhone: phone,
-      deliveryAddress: address,
-      totalPrice,
+
+    if (!firestore || !user) {
+        toast({
+            variant: 'destructive',
+            title: 'Not Logged In',
+            description: 'You must be logged in to place an order.',
+        });
+        return;
+    }
+
+    const ordersCollection = collection(firestore, 'orders');
+    
+    addDocumentNonBlocking(ordersCollection, {
+        consumerId: user.uid,
+        farmerId: farmer.id,
+        productId: product.id,
+        productName: product.name,
+        productImage: product.photoUrls?.[0] || null,
+        quantity: quantity,
+        unit: product.unit,
+        pricePerUnit: product.price,
+        deliveryFee: DELIVERY_FEE,
+        totalPrice: totalPrice,
+        status: 'pending_confirmation',
+        consumerName: name,
+        consumerPhone: phone,
+        deliveryAddress: address,
+        pickupAddress: farmer.address,
+        createdAt: serverTimestamp(),
     });
+
     toast({
       title: 'Order Placed!',
-      description: `Your order for ${quantity} ${product.unit} of ${product.name} is confirmed.`,
+      description: `Your order for ${quantity} ${product.unit} of ${product.name} is confirmed. The farmer will contact you shortly.`,
       action: <CheckCircle className="text-green-500" />,
     });
     onOpenChange(false);

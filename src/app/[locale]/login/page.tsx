@@ -61,28 +61,34 @@ function LoginPage() {
 
   // Redirect if user is already logged in
   useEffect(() => {
-    if (!isUserLoading && user) {
-      const redirect = async () => {
-        if (!firestore) return;
-        const userRef = doc(firestore, 'users', user.uid);
-        const userDoc = await getDoc(userRef);
-        if (userDoc.exists()) {
-          const userProfile = userDoc.data();
-          switch (userProfile.userType) {
-            case 'farmer':
-              router.replace('/farmer/dashboard');
-              break;
-            case 'rider':
-              router.replace('/rider/dashboard');
-              break;
-            default:
-              router.replace('/discover');
-              break;
+    // This timeout gives Firestore time to be populated after signup
+    // before we check the user's role for redirection.
+    const redirectTimeout = setTimeout(() => {
+      if (!isUserLoading && user) {
+        const redirect = async () => {
+          if (!firestore) return;
+          const userRef = doc(firestore, 'users', user.uid);
+          const userDoc = await getDoc(userRef);
+          if (userDoc.exists()) {
+            const userProfile = userDoc.data();
+            switch (userProfile.userType) {
+              case 'farmer':
+                router.replace('/farmer/dashboard');
+                break;
+              case 'rider':
+                router.replace('/rider/dashboard');
+                break;
+              default:
+                router.replace('/discover');
+                break;
+            }
           }
-        }
-      };
-      redirect();
-    }
+        };
+        redirect();
+      }
+    }, 500); // A short delay to prevent race conditions on signup
+
+    return () => clearTimeout(redirectTimeout);
   }, [user, isUserLoading, firestore, router]);
 
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
@@ -114,7 +120,7 @@ function LoginPage() {
 
       await setDoc(userRef, userData);
 
-      // No need to redirect here, the useEffect will handle it
+      // The useEffect will handle redirection.
     } catch (error: any) {
       console.error(error);
       toast({
@@ -132,7 +138,7 @@ function LoginPage() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
-      // No need to redirect here, the useEffect will handle it
+      // The useEffect will handle redirection.
     } catch (error: any) {
       console.error(error);
       toast({
