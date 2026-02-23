@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, User, Shield, LogOut, Heart } from 'lucide-react';
+import { ChevronRight, User, Shield, LogOut, Banknote, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -37,6 +37,7 @@ export default function RiderProfilePage() {
 
     const menuItems = [
         { icon: User, label: 'Edit Profile', href: '/rider/profile/edit' },
+        { icon: Banknote, label: 'Banking & Payments', href: '/rider/profile/banking' },
         { icon: Heart, label: 'My Reviews', href: '#' },
         { icon: Shield, label: 'Account Security', href: '#' },
     ];

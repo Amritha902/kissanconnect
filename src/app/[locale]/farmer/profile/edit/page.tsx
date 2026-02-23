@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const profileSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
+  phone: z.string().min(10, "A valid 10-digit phone number is required").max(10, "A valid 10-digit phone number is required"),
   aadhar: z.string().optional(),
 });
 
@@ -39,6 +40,7 @@ export default function EditFarmerProfilePage() {
     defaultValues: {
       firstName: '',
       lastName: '',
+      phone: '',
       aadhar: '',
     },
   });
@@ -50,6 +52,7 @@ export default function EditFarmerProfilePage() {
       form.reset({
         firstName: firstName || '',
         lastName: lastName || '',
+        phone: userProfile.phone || '',
         aadhar: userProfile.hashedAadhaar || '',
       });
     }
@@ -63,6 +66,7 @@ export default function EditFarmerProfilePage() {
     const userRef = doc(firestore, 'users', uid);
     updateDocumentNonBlocking(userRef, {
       name: `${values.firstName} ${values.lastName}`.trim(),
+      phone: values.phone,
       hashedAadhaar: values.aadhar,
     });
     toast({
@@ -87,6 +91,7 @@ export default function EditFarmerProfilePage() {
                             <Skeleton className="h-10 w-full" />
                             <Skeleton className="h-10 w-full" />
                         </div>
+                        <Skeleton className="h-10 w-full" />
                         <Skeleton className="h-10 w-full" />
                         <Skeleton className="h-11 w-full" />
                     </CardContent>
@@ -136,6 +141,19 @@ export default function EditFarmerProfilePage() {
                     )}
                     />
                 </div>
+                 <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="9876543210" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="aadhar"

@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, User, MapPin, Bell, LogOut } from 'lucide-react';
+import { ChevronRight, User, MapPin, Bell, LogOut, Banknote } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -38,6 +38,7 @@ export default function ConsumerProfilePage() {
     const menuItems = [
         { icon: User, label: 'Edit Profile', href: '/discover/profile/edit' },
         { icon: MapPin, label: 'Saved Addresses', href: '#' },
+        { icon: Banknote, label: 'Banking & Payments', href: '/discover/profile/banking' },
         { icon: Bell, label: 'Notification Settings', href: '/discover/profile/notifications' },
     ];
 

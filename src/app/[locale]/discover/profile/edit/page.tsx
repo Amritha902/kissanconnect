@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const profileSchema = z.object({
   name: z.string().min(2, "Full name is required"),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "A valid 10-digit phone number is required").max(10, "A valid 10-digit phone number is required"),
 });
 
 export default function EditConsumerProfilePage() {

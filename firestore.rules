@@ -78,6 +78,21 @@ service cloud.firestore {
     }
 
     /**
+     * Checks if a price update is acceptable. Owners can decrease prices or
+     * increase them by up to 20%. Larger increases require an admin.
+     */
+    function isPriceIncreaseAcceptable(request, resource) {
+      let newPrice = request.resource.data.price;
+      let oldPrice = resource.data.price;
+      // Price cannot be negative.
+      if (newPrice < 0) {
+        return false;
+      }
+      // Price can be decreased or increased up to 20% by the owner.
+      return newPrice <= oldPrice * 1.2;
+    }
+
+    /**
      * Checks if the current user is a participant in a conversation.
      * This requires reading the parent conversation document.
      * Note: This `get()` call is necessary to secure list operations on the subcollection.
@@ -100,8 +115,8 @@ service cloud.firestore {
      * @principle Restricts access to a user's own data tree.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
+      allow get: if true; // Allow public read of profiles for discoverability
+      allow list: if isSignedIn();
       allow create: if isOwner(userId);
       allow update: if isOwner(userId);
       allow delete: if isOwner(userId);
@@ -123,18 +138,20 @@ service cloud.firestore {
     }
 
     /**
-     * @description Stores product listings. Anyone can read products, but only the farmer who created it can modify or delete it.
+     * @description Stores product listings. Anyone can read. Owner can update within limits. Admins have full control.
      * @path /products/{productId}
      * @allow (create) A signed-in user (farmer) creating a product with their own `farmerId`.
-     * @deny (update) A user trying to update a product where `resource.data.farmerId` does not match their UID.
-     * @principle Public read with owner-only writes.
+     * @deny (update) A farmer trying to increase a product price by more than 20%.
+     * @principle Public read, owner-write with business logic, admin override.
      */
     match /products/{productId} {
       allow get: if true;
       allow list: if true;
       allow create: if isSignedIn() && request.resource.data.farmerId == request.auth.uid;
-      allow update: if isOwner(resource.data.farmerId) && resource != null;
-      allow delete: if isOwner(resource.data.farmerId) && resource != null;
+      allow update: if resource != null && (
+        (isOwner(resource.data.farmerId) && isPriceIncreaseAcceptable(request, resource)) || isAdmin()
+      );
+      allow delete: if resource != null && (isOwner(resource.data.farmerId) || isAdmin());
     }
 
     /**
