@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
-import { Link } from 'next-intl/navigation';
+import Link from 'next/link';
 
 export default function Home() {
   const t = useTranslations('HomePage');
