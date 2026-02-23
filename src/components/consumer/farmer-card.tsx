@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Link } from 'next-intl/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

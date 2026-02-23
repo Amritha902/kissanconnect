@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useTranslations } from 'next-intl';
-// import { useRouter } from 'next-intl/navigation'; // REMOVED to prevent crash
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
@@ -16,6 +16,7 @@ type UserType = 'consumer' | 'farmer';
 
 export default function Home() {
   const t = useTranslations('HomePage');
+  const router = useRouter();
   const locale = useLocale();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -30,14 +31,9 @@ export default function Home() {
   const { data: userProfile } = useDoc<any>(memoizedUserDocRef);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     if (!isUserLoading && user && firestore) {
-      // Using direct navigation to bypass the useRouter issue on this page.
       const navigate = (path: string) => {
-        window.location.href = `/${locale}${path}`;
+        router.push(path);
       };
 
       if (userTypeToCreate) {
@@ -82,7 +78,7 @@ export default function Home() {
         }
       }
     }
-  }, [user, isUserLoading, userTypeToCreate, firestore, userProfile, locale]);
+  }, [user, isUserLoading, userTypeToCreate, firestore, userProfile, locale, router]);
 
   const handleLogin = (type: UserType) => {
     if (!auth) return;
