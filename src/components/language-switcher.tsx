@@ -21,7 +21,7 @@ export function LanguageSwitcher() {
 
   const onSelectChange = (newLocale: string) => {
     startTransition(() => {
-      router.replace(`/${newLocale}${pathname}`);
+      router.replace(pathname, {locale: newLocale});
     });
   };
 

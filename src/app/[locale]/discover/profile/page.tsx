@@ -91,7 +91,7 @@ export default function ConsumerProfilePage() {
             </CardContent>
         </Card>
         
-        <Button onClick={() => handleLogout(auth)} variant="outline" className="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
+        <Button onClick={() => auth && handleLogout(auth)} variant="outline" className="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
             <LogOut className="mr-2 h-5 w-5" />
             Log Out
         </Button>
